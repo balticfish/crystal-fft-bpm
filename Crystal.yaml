@@ -25,16 +25,19 @@ thickness: 50
 xxmax: 1200 
 yymax: 10 
 
-#Integration method: Euler, Verlet, Forest-Ruth
+#Integration methods: Euler, Verlet, Forest-Ruth
 step_factor: 0.125
 method: 'Euler'
 #Mode: TIDP, TDP
 mode: 'TIDP'
 beam: 'Gaussian'
 waist: 250.0
-nthread_fft: 4
 
 #Deformation of lattice: None, Sinusoidal, 
 deformation: 'None'
 def_amplitude: 0.0
 def_period: 4.0
+
+#program settings
+nthread_fft: 4
+quiet_mode: True

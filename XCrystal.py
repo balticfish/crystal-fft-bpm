@@ -38,6 +38,7 @@ class XCrystal:
         self.HH = self.config['thickness'] * 1.0e-6 / 2.0 * self.convr
         
         self.method = self.config['method']
+        self.quiet = self.config['quiet_mode']
         
         
         if self.method == 'Euler':
@@ -53,6 +54,12 @@ class XCrystal:
             self.c_i = [0.0, self.tt, 1.0 - 2.0 * self.tt, self.tt]
             self.d_i = [self.tt / 2.0, (1.0 - self.tt) / 2.0, (1.0 - self.tt) / 2.0, self.tt / 2.0]
             
+    def qprint(self, str): 
+        
+        if self.quiet:
+            pass
+        else:
+            print(str)
             
     def configure(self, Delta_alpha):
         
@@ -79,7 +86,7 @@ class XCrystal:
         self.kky = self.dky*(np.arange(1,len(self.yy)+1) - 0.5*len(self.yy)) #k vector in y
         self.Ky, self.Kx = np.meshgrid(self.kky, self.kkx) # angular spectrum mesh/grid
         
-        print('Congigured grid parameters')
+        self.qprint('Congigured grid parameters')
         self.beam = self.config['beam']
         
         if self.beam=='Gaussian':
@@ -90,7 +97,7 @@ class XCrystal:
             self.zX  =  self.zR*np.sqrt(self.omZ**2.0 / self.om0**2.0 - 1.0) #distance of the source w/r to the sample
             self.x00 = -3.0 * self.om0 - self.HH # shift  in x w.r. to the origin
             self.E0 = self.omZ / self.om0 # amplitude of electric field 
-            print('Congigured a Gaussian beam')
+            self.qprint('Congigured a Gaussian beam')
         
         self.M = np.int(np.round(1.1*self.xxmax / self.Z / np.tan(self.alpha))) # number of steps in z   
         
@@ -111,7 +118,7 @@ class XCrystal:
         if self.deformation_model == 'None':
             self.u = np.zeros((self.M))
         
-        print('Congigured deformation model')
+        self.qprint('Congigured deformation model')
         
         
     def run3D(self):

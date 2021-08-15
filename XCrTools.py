@@ -10,7 +10,7 @@ class XCrTools:
     def __init__(self, XCr):
         
         self.nthread_fft = XCr.nthread_fft
-        print('Initialized tools...')
+        XCr.qprint('Initialized tools...')
         
         
     def Gaussian_2D(self, XCr):
