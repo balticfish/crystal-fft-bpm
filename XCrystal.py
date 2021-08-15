@@ -31,8 +31,8 @@ class XCrystal:
         self.epsxh0 = self.eps - 1.0 # difference of average electric susceptibility w.r. to vacuum
         self.cosa = np.sqrt(1.0 - self.k0**2.0)
         
-        self.step_factor = self.config['step_factor']
-        self.Z = np.abs(self.step_factor * np.pi/np.real(self.epsxh0))  #  Z - step in z
+        self.Zstep_factor = self.config['Zstep_factor']
+        self.Z = np.abs(self.Zstep_factor * np.pi/np.real(self.epsxh0))  #  Z - step in z
         self.nthread_fft = self.config['nthread_fft']
         
         self.HH = self.config['thickness'] * 1.0e-6 / 2.0 * self.convr
@@ -122,6 +122,9 @@ class XCrystal:
         
         
     def run3D(self):
+        
+        start_msg = 'Splitting recipe: ' + self.method
+        self.qprint(start_msg)
         
         xbpm = XBPM.XBPM(self)
         

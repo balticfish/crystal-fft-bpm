@@ -15,8 +15,8 @@ class XBPM:
             self.int_coeff = 1.0
         else:
             #self.int_coeff = np.exp((np.abs(jv(0, np.sqrt(2.0) * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa)) - np.abs(jv(0, 2.0 * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa))) / 4.0)
-            self.int_coeff = np.exp((XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa)**2 / 8.0)
-            #self.int_coeff = np.exp((XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa)**2 / 8.0) * np.exp(-3.0 * XCr.ele_susceptH * XCr.Z / (2.0 * XCr.cosa)**2 / 4.0)
+            self.int_coeff = np.exp((XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa)**2 / 2.0)
+
     
     def ksih0_select(self, XCr, params):
         
@@ -31,7 +31,7 @@ class XBPM:
     def ksih1_p_select(self, XCr, params):
         
         u, d_i = params
-        jv_pp = jv(1, 2.0 * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa * d_i) #* self.int_coeff
+        jv_pp = jv(1, 2.0 * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa * d_i) 
         tr = np.zeros_like(XCr.Xx, dtype=np.complex)
         idx_nonzero = self.log_h1h2(XCr, u)
         tr[idx_nonzero] = 1j * jv_pp * np.exp(2j * XCr.k0 * u) 
@@ -41,7 +41,7 @@ class XBPM:
     def ksih1_m_select(self, XCr, params):
         
         u, d_i = params
-        jv_pm = jv(1, 2.0 * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa * d_i) #* self.int_coeff
+        jv_pm = jv(1, 2.0 * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa * d_i) 
         tr = np.zeros_like(XCr.Xx, dtype=np.complex)
         idx_nonzero = self.log_h1h2(XCr, u)
         tr[idx_nonzero] = 1j * jv_pm * np.exp(-2j * XCr.k0 * u) 

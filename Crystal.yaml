@@ -26,7 +26,7 @@ xxmax: 1200
 yymax: 10 
 
 #Integration methods: Euler, Verlet, Forest-Ruth
-step_factor: 0.125
+Zstep_factor: 0.125
 method: 'Euler'
 #Mode: TIDP, TDP
 mode: 'TIDP'
