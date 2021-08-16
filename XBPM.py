@@ -11,11 +11,6 @@ class XBPM:
         self.xtools = tools.XCrTools(XCr)
         self.E_in = self.xtools.Gaussian_2D(XCr)
         self.u = XCr.u
-        if XCr.method == 'Euler':
-            self.int_coeff = 1.0
-        else:
-            #self.int_coeff = np.exp((np.abs(jv(0, np.sqrt(2.0) * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa)) - np.abs(jv(0, 2.0 * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa))) / 4.0)
-            self.int_coeff = np.exp((XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa)**2 / 2.0)
 
     
     def ksih0_select(self, XCr, params):
