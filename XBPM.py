@@ -70,7 +70,7 @@ class XBPM:
         log_pR = XCr.Kx**2.0 + XCr.Ky**2.0 < 1.0
         
         PMinusR = np.sqrt(1.0 - (XCr.Kx - XCr.k0)**2.0 - XCr.Ky**2.0) * log_pR 
-        DkMinusR = np.exp(1j*np.dot(PMinusR, c_i * XCr.Z)) 
+        DkMinusR = np.exp(1j * np.dot(PMinusR, c_i * XCr.Z)) 
         PPlusR = np.sqrt(1.0 - (XCr.Kx + XCr.k0)**2.0 - XCr.Ky**2.0)*log_pR
         DkPlusR = np.exp(1j*np.dot(PPlusR, c_i * XCr.Z))
         
