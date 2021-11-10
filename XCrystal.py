@@ -6,10 +6,13 @@ import XBPM as XBPM
 
 class XCrystal:
 
-    def __init__(self, omega, YAML):
+    def __init__(self, YAML, omega=None):
         
         self.config = yaml.load(open(YAML), Loader=yaml.FullLoader)
-        self.omega0 = omega #self.config['omega0']
+        if (omega is None):
+            self.omega0 = self.config['omega0']
+        else:
+            self.omega0 = omega 
         self.lam = 12398.0 / self.omega0  * 1.0e-10
         self.K0 = 2.0 * np.pi / self.lam #modululs of k vector
         self.convr = self.K0 # 'convr' to convert meters to dimensionless units
