@@ -9,7 +9,11 @@ class XBPM:
     def __init__(self, XCr):
         
         self.xtools = tools.XCrTools(XCr)
-        self.E_in = self.xtools.Gaussian_2D(XCr)
+        if (XCr.field is None):
+            self.E_in = self.xtools.Gaussian_2D(XCr)
+        else:
+            self.E_in = XCr.field
+            XCr.qprint('Running with imported field')
         self.u = XCr.u
 
     

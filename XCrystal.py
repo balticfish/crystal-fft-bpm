@@ -1,29 +1,40 @@
 import numpy as np
 from scipy.special import jv
+import scipy.constants as sp_const
 import yaml
 import XBPM as XBPM
-
 
 class XCrystal:
 
     def __init__(self, YAML, omega=None):
         
         self.config = yaml.load(open(YAML), Loader=yaml.FullLoader)
+        
+        self.omega0 = self.config['omega0']
+        
         if (omega is None):
-            self.omega0 = self.config['omega0']
+            self.omega = self.omega0
         else:
-            self.omega0 = omega 
-        self.lam = 12398.0 / self.omega0  * 1.0e-10
+            self.omega = omega 
+            
+        self.lam0 = 12398.0 / self.omega0  * 1.0e-10
+        self.convr0 = 2.0 * np.pi / self.lam0 # 'convr0' to convert meters to dimensionless units
+
+        self.lam = 12398.0 / self.omega  * 1.0e-10
         self.K0 = 2.0 * np.pi / self.lam #modululs of k vector
         self.convr = self.K0 # 'convr' to convert meters to dimensionless units
+        self.c = sp_const.c
+        self.hbar = sp_const.hbar / sp_const.e 
 
         self.a0 = self.config['a0'] * 1.0e-10
         self.Miller_h = self.config['Miller_h']
         self.Miller_k = self.config['Miller_k']
         self.Miller_l = self.config['Miller_l']
+        
         self.d = np.sqrt(self.a0**2 / (self.Miller_h**2 + self.Miller_k**2 + self.Miller_l**2)) * self.convr #interplanar spacing
         self.dm = self.d / self.convr #interplanar spacing [m]
-        self.alphaB = np.arcsin(self.lam / self.dm / 2.0)
+        
+        self.alphaB = np.arcsin(self.lam0 / self.dm / 2.0)
 
         self.k0 = np.pi / self.d # half of reciprocal vector,  reciprocal vector =  2*k0
         self.n_d = 1.0 - (self.config['delta'] -1j * self.config['beta'])
@@ -42,7 +53,58 @@ class XCrystal:
         
         self.method = self.config['method']
         self.quiet = self.config['quiet_mode']
+        if (self.quiet == False):
+            print('Quiet mode disabled. I will talk a lot...')
         
+        
+        self.xxmax = self.config['xxmax'] * 1.0e-6 * self.convr # grid size in x
+        self.yymax = self.config['yymax'] * 1.0e-6 * self.convr # grid size in y 
+        self.dxx = self.config['res_x'] # grid resolution, x
+        self.dyy = self.config['res_y'] #self.yymax # grid resolution, y
+
+        self.xgrid = self.config['xgrid']
+        self.ygrid = self.config['ygrid']
+        self.tpad = self.config['tpad']
+        
+        self.nxarr = 2.0 * self.xxmax / self.dxx
+        self.nyarr = 2.0 * self.yymax / self.dyy
+
+        self.xx = self.dxx * np.linspace(-self.nxarr/2, self.nxarr/2+1, self.xgrid)
+        self.yy = self.dyy * np.linspace(-self.nyarr/2, self.nyarr/2+1, self.ygrid)
+        
+        self.Yy, self.Xx = np.meshgrid(self.yy, self.xx) # x,y mesh/grid
+        
+        # reciprocal space (angular spectrum)
+        self.dkx = 2.0*np.pi/max(self.xx)/2.0  # grid resolution,k vector in x  
+        self.kkx = self.dkx*(np.arange(1,len(self.xx)+1) - 0.5*len(self.xx))#  k vector in x   
+        self.dky = 2.0*np.pi/max(self.yy)/2.0 # grid resolution,k vector in y 
+        self.kky = self.dky*(np.arange(1,len(self.yy)+1) - 0.5*len(self.yy)) #k vector in y
+        self.Ky, self.Kx = np.meshgrid(self.kky, self.kkx) # angular spectrum mesh/grid
+        
+        
+        self.qprint('Congigured grid parameters')
+        self.beam = self.config['beam']
+        
+        if self.beam=='Gaussian':
+            self.waist = self.config['waist']
+            self.om0  = self.waist * 1e-6 * self.convr   # electric field radius at the waist
+            self.omZ = self.waist * 1e-6 * self.convr   # electric field radius at the sample
+            self.zR  = self.K0 * (self.om0**2.0)/2.0     # Rayleigh parameter in the internal units (lamda =2*np.pi)
+            self.zX  =  self.zR*np.sqrt(self.omZ**2.0 / self.om0**2.0 - 1.0) #distance of the source w/r to the sample
+            self.x00 = -3.0 * self.om0 - self.HH # shift  in x w.r. to the origin
+            self.E0 = self.omZ / self.om0 # amplitude of electric field 
+            self.qprint('Congigured a Gaussian beam')
+            
+        if self.beam=='GenesisV2':
+            self.fname_GenV2 = self.config['fname_GenV2']
+            self.ncar_GenV2 = self.config['ncar_GenV2']
+            mag_factor = self.config['mag_factor_GenV2']
+            crop_t = self.config['crop_t']
+            crop_x = self.config['crop_x']
+            self.dgrid_GenV2 = self.config['dgrid_GenV2'] / mag_factor
+            self.zsep_GenV2 = self.config['zsep_GenV2']
+            self.E0 = 1.0 # amplitude of electric field 
+            self.qprint('Congigured a Genesis2 beam')
         
         if self.method == 'Euler':
             self.c_i = [1.0]
@@ -64,44 +126,17 @@ class XCrystal:
         else:
             print(str)
             
-    def configure(self, Delta_alpha):
+    def configure(self, Delta_alpha, field=None):
         
         self.Delta_alpha = Delta_alpha
         self.alpha = self.alphaB + self.Delta_alpha
         self.alphaDeg = self.alpha * 180.0 / np.pi
-                
-        self.xxmax = self.config['xxmax'] * 1.0e-6 * self.convr # grid size in x
-        self.yymax = self.config['yymax'] * 1.0e-6 * self.convr # grid size in y 
-        self.dxx = 1.0 / 3.0e-5 # grid resolution, x
-        self.dyy = self.yymax # grid resolution, y
+        
+        if (field is None):
+            self.field = None
+        else:
+            self.field = field * np.exp(1j * (np.sin(self.alpha) - self.k0) * self.Xx)
 
-        self.nxarr = 2.0 * self.xxmax / self.dxx
-        self.nyarr = 2.0 * self.yymax / self.dyy
-
-        self.xx = self.dxx * np.arange(-self.nxarr/2, self.nxarr/2+1)
-        self.yy = self.dyy * np.arange(-self.nyarr/2, self.nyarr/2+1)
-        self.Yy, self.Xx = np.meshgrid(self.yy, self.xx) # x,y mesh/grid
-        
-        # reciprocal space (angular spectrum)
-        self.dkx = 2.0*np.pi/max(self.xx)/2.0  # grid resolution,k vector in x  
-        self.kkx = self.dkx*(np.arange(1,len(self.xx)+1) - 0.5*len(self.xx))#  k vector in x   
-        self.dky = 2.0*np.pi/max(self.yy)/2.0 # grid resolution,k vector in y 
-        self.kky = self.dky*(np.arange(1,len(self.yy)+1) - 0.5*len(self.yy)) #k vector in y
-        self.Ky, self.Kx = np.meshgrid(self.kky, self.kkx) # angular spectrum mesh/grid
-        
-        self.qprint('Congigured grid parameters')
-        self.beam = self.config['beam']
-        
-        if self.beam=='Gaussian':
-            self.waist = self.config['waist']
-            self.om0  = self.waist * 1e-6 * self.convr   # electric field radius at the waist
-            self.omZ = self.waist * 1e-6 * self.convr   # electric field radius at the sample
-            self.zR  = (self.om0**2.0)/2.0     # Rayleigh parameter in the internal units (lamda =2*np.pi)
-            self.zX  =  self.zR*np.sqrt(self.omZ**2.0 / self.om0**2.0 - 1.0) #distance of the source w/r to the sample
-            self.x00 = -3.0 * self.om0 - self.HH # shift  in x w.r. to the origin
-            self.E0 = self.omZ / self.om0 # amplitude of electric field 
-            self.qprint('Congigured a Gaussian beam')
-        
         self.M = np.int(np.round(1.1*self.xxmax / self.Z / np.tan(self.alpha))) # number of steps in z   
         
         self.deformation_model = self.config['deformation']

@@ -21,17 +21,42 @@ Miller_l: 0
 thickness: 50 
 
 #Grid parameters
+xgrid: 3200
+ygrid: 10
+
 #size in micron
 xxmax: 1200 
-yymax: 10 
+yymax: 150
+#yymax: 10 
+
+
+#Grid resolution
+res_x: 33333
+res_y: 1234567
+#res_y: 10
+
+tpad: 4096
 
 #Integration methods: Euler, Verlet, Forest-Ruth
 Zstep_factor: 0.125
 method: 'Euler'
 #Mode: TIDP, TDP
 mode: 'TIDP'
+
 beam: 'Gaussian'
 waist: 250.0
+
+#pump from file GenesisV2
+
+# beam: 'GenesisV2'
+# fname_GenV2: 'pump-test-GenV2.dfl'
+# ncar_GenV2: 251
+# dgrid_GenV2: 1.2e-3
+# mag_factor_GenV2: 1.0
+# zsep_GenV2: 40
+# crop_t: 1.0
+# crop_x: 1.0
+
 
 #Deformation of lattice: None, Sinusoidal, 
 deformation: 'None'
@@ -40,4 +65,4 @@ def_period: 4.0
 
 #program settings
 nthread_fft: 4
-quiet_mode: True
+quiet_mode: False
