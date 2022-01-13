@@ -6,7 +6,7 @@ import XBPM as XBPM
 
 class XCrystal:
 
-    def __init__(self, YAML, omega=None):
+    def __init__(self, YAML, omega=None, E0=None):
         
         self.config = yaml.load(open(YAML), Loader=yaml.FullLoader)
         
@@ -47,12 +47,15 @@ class XCrystal:
         
         self.Zstep_factor = self.config['Zstep_factor']
         self.Z = np.abs(self.Zstep_factor * np.pi/np.real(self.epsxh0))  #  Z - step in z
+        self.zsep = self.config['zsep']
         self.nthread_fft = self.config['nthread_fft']
         
         self.HH = self.config['thickness'] * 1.0e-6 / 2.0 * self.convr
         
         self.method = self.config['method']
         self.quiet = self.config['quiet_mode']
+        self.store_fields = self.config['store_fields']
+
         if (self.quiet == False):
             print('Quiet mode disabled. I will talk a lot...')
         
@@ -92,7 +95,10 @@ class XCrystal:
             self.zR  = self.K0 * (self.om0**2.0)/2.0     # Rayleigh parameter in the internal units (lamda =2*np.pi)
             self.zX  =  self.zR*np.sqrt(self.omZ**2.0 / self.om0**2.0 - 1.0) #distance of the source w/r to the sample
             self.x00 = -3.0 * self.om0 - self.HH # shift  in x w.r. to the origin
-            self.E0 = self.omZ / self.om0 # amplitude of electric field 
+            if (E0 is None):
+                self.E0 = self.omZ / self.om0 # amplitude of electric field 
+            else:
+                self.E0 = E0
             self.qprint('Congigured a Gaussian beam')
             
         if self.beam=='GenesisV2':
@@ -138,6 +144,7 @@ class XCrystal:
             self.field = field * np.exp(1j * (np.sin(self.alpha) - self.k0) * self.Xx)
 
         self.M = np.int(np.round(1.1*self.xxmax / self.Z / np.tan(self.alpha))) # number of steps in z   
+        self.M_store = int(self.M / self.zsep)
         
         self.deformation_model = self.config['deformation']
         
@@ -179,6 +186,10 @@ class XCrystal:
         
         self.Reflectivity = Reflectivity
         self.Transmission = Transmission
+        
+        if self.store_fields:
+            self.U1_field = xbpm.U1_store
+            self.U2_field = xbpm.U2_store
         
         
         print('Delta theta: ', self.Delta_alpha, '; Reflectivity: ', Reflectivity, '; Transmission: ', Transmission)

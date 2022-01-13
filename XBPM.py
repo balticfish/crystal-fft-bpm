@@ -15,6 +15,11 @@ class XBPM:
             self.E_in = XCr.field
             XCr.qprint('Running with imported field')
         self.u = XCr.u
+        
+        ix, iy = np.shape(self.E_in)
+        
+        self.U1_store = np.zeros((ix, iy, XCr.M_store+1), dtype=complex)
+        self.U2_store = np.zeros((ix, iy, XCr.M_store+1), dtype=complex)
 
     
     def ksih0_select(self, XCr, params):
@@ -135,6 +140,11 @@ class XBPM:
                     U1 = U1
                     U2 = U2
                     
+            if XCr.store_fields and (k % XCr.zsep == 0):
+                self.U1_store[:,:,int(k/XCr.zsep)] = U1
+                self.U2_store[:,:,int(k/XCr.zsep)] = U2
+        
+            
         return U1, U2                
                     
                 

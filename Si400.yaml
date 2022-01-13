@@ -31,12 +31,11 @@ yymax: 150
 
 
 #Grid resolution
-res_x: 555555
+res_x: 33333
 res_y: 1234567
 #res_y: 10
 
-tpad: 512
-
+tpad: 4096
 
 #Integration methods: Euler, Verlet, Forest-Ruth
 Zstep_factor: 0.125
@@ -66,6 +65,4 @@ def_period: 4.0
 
 #program settings
 nthread_fft: 4
-quiet_mode: True
-store_fields: True
-zsep: 30
+quiet_mode: False

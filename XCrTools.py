@@ -23,6 +23,30 @@ class XCrTools:
         
         return XCr.E0 * 1.0 / (1.0 + 1j * XCr.zX / XCr.zR) * np.exp(-(((((XCr.Xx - XCr.x00)**2.0 + XCr.Yy**2.0) / ((XCr.om0**2.0) * (1.0 + 1j * XCr.zX / XCr.zR)))))) * np.exp(1j * (np.sin(alpha) - XCr.k0) * XCr.Xx)
     
+#     def Gaussian_pulse_3D_with_q(self, XCr, k=None):
+#         """
+#         Generate a complex three-dimensional spatio-temporal Gaussian field amplitude profile with in terms of complex beam parameter q
+
+#         Parameters
+#         ----------
+  
+#         Returns
+#         -------
+#         np.ndarray
+
+#         """
+
+#         qx = 1j * XCr.zR
+#         qy = 1j * XCr.zR
+
+#         ux = 1.0 / np.sqrt(qx) * np.exp(-1j * XCr.K0 * (XCr.Xx - XCr.x00)**2 / 2.0 / qx)
+#         uy = 1.0 / np.sqrt(qy) * np.exp(-1j * XCr.K0 * XCr.Yy**2 / 2.0 / qy)
+#         ut = 1.0 / (np.sqrt(2.0 * np.pi) * X.sigma_t) * np.exp(-(X.t_mesh - X.t0)**2 / 2.0 / X.sigma_t**2)
+
+#         eta = 2.0 * k * X.zR * X.sigma_t / np.sqrt(np.pi)
+
+#         return np.sqrt(eta) * np.sqrt(X.N_pump) * ux * uy * ut * np.exp(1j * (np.sin(alpha) - XCr.k0) * XCr.Xx)
+    
     
     def Pseudo_SASE_3D(self, XCr, tau, sigma_coh, Nmodes, Nslice):
         '''
