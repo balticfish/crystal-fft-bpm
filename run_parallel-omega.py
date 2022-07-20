@@ -19,7 +19,7 @@ comment = 'Silicon_400_9000_eV'
 print('Running simulation for: ', comment)
 
 
-XCr_path = '/home/alex/Downloads/lume-crystal-bpm-master'
+XCr_path = '/home/alex/Downloads/crystal-fft-bpm'
 sys.path.append(XCr_path)
 
 
@@ -27,7 +27,7 @@ def single_realization(delta_theta, w_ind):
     
     omega = omega0 + w_sim[w_ind]
 
-    xcr = XCrystal(XCr_path+'/Crystal.yaml', omega)
+    xcr = XCrystal(XCr_path+'/config/Crystal.yaml', omega)
     xcr.configure(delta_theta, E_wxy_sim[w_ind,:,:])
     xcr.run3D()
     
@@ -38,7 +38,7 @@ def single_realization_with_data(w_ind):
     
     omega = omega0 + w_sim[w_ind]
 
-    xcr = XCrystal(XCr_path+'/Crystal.yaml', omega)
+    xcr = XCrystal(XCr_path+'/config/Crystal.yaml', omega)
     xcr.configure(delta_theta, E_wxy_sim[w_ind,:,:])
     xcr.run3D()
     
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     delta_theta = 0.0
     omega0 = 9000.0
 
-    xcr = XCrystal(XCr_path+'/Crystal.yaml', omega0)
+    xcr = XCrystal(XCr_path+'/config/Crystal.yaml', omega0)
     xtools = tools.XCrTools(xcr)
 
     xcr.tgrid = 200
@@ -137,20 +137,3 @@ if __name__ == '__main__':
     t1 = time.time()  
     print('Time (s):', t1 - t0)
     
-        
-#  #   delta_theta = np.linspace(-13.862472049580001e-6, 41.54780686945001e-6, Npoints)    
-#     delta_theta = np.linspace(0.000001, 0.000080, Npoints)    
-    
-#     full_run = np.zeros((n_cycle, n_par, 3))
-        
-#     for i in range(0, n_cycle):
-        
-#         print('Cycle number: ', i)
-#         res = mp_launcher(n_par, delta_theta[i*n_par:i*n_par + n_par])
-#         full_run[i, :, :] = res
-    
-#     filename = 'run_' + str(n_cycle) + '_' + str(n_par) + '_' + comment
-#     np.save(filename, full_run)
-    
-#     t1 = time.time()  
-#     print('Time (s):', t1 - t0)

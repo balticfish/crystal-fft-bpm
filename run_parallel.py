@@ -4,23 +4,17 @@ import multiprocessing
 from XCrystal import *
 import sys
 
-
-#comment = 'Silicon_004_9000_eV'
-
-#comment = 'Diamond_400_9831_eV'
-#comment = 'Diamond_333_12800_eV'
-
 comment = 'Silicon_444_8048_eV'
 
 print('Running simulation for: ', comment)
 
 
-XCr_path = '/home/alex/Downloads/lume-crystal-bpm-master'
+XCr_path = '/home/alex/Downloads/crystal-fft-bpm'
 sys.path.append(XCr_path)
 
 def single_realization(delta_theta):
     
-    xcr = XCrystal(XCr_path+'/Si444.yaml')
+    xcr = XCrystal(XCr_path+'/config/Si444.yaml')
     xcr.configure(delta_theta)
     xcr.run3D()
     
@@ -45,7 +39,6 @@ if __name__ == '__main__':
     
     Npoints = n_par * n_cycle
         
- #   delta_theta = np.linspace(-13.862472049580001e-6, 41.54780686945001e-6, Npoints)    
     delta_theta = np.linspace(0.000001, 0.000080, Npoints)    
     
     full_run = np.zeros((n_cycle, n_par, 3))
