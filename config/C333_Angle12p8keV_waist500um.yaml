@@ -4,11 +4,14 @@
 
 omega0: 12800.0  #central photon energy
 
-a0: 3.5668 #Diamond lattice constant in A
+a0: 3.56679 #Diamond lattice constant in A
+ 
 
 #  Refraction index = 1 - delta - i*beta :
+
 delta: 4.45674658655637046E-006
 beta:  2.85960537412047332E-009
+
 
 xrh: 0.145194E-05
 xih: 0.318424E-08  
@@ -21,18 +24,19 @@ Miller_l: 3
 thickness: 100 
 
 #Grid parameters
-xgrid: 3200
-ygrid: 10
+xgrid: 4000
+ygrid: 1
 
 #size in micron
-xxmax: 1200 
+xxmax: 2000
 yymax: 10
 #yymax: 10 
 
+x00: -1000
 
 #Grid resolution
 res_x: 33333
-res_y: 10
+res_y: 1
 #res_y: 10
 
 tpad: 4096
@@ -44,7 +48,7 @@ method: 'Forest-Ruth'
 mode: 'TIDP'
 
 beam: 'Gaussian'
-waist: 250.0
+waist: 500.0
 
 #pump from file GenesisV2
 
@@ -67,4 +71,4 @@ def_period: 4.0
 nthread_fft: 4
 quiet_mode: True
 store_fields: True
-zsep: 30
+zsep: 100

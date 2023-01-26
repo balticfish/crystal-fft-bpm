@@ -1,0 +1,62 @@
+#=============================================
+# Define Crystal Parameters
+#=============================================
+
+#=============================================
+# Define Crystal Parameters
+#=============================================
+
+omega0: 5000.0  #central photon energy
+
+a0: 5.4307  #Silicon lattice constant in A
+
+#  Refraction index = 1 - delta - i*beta :
+delta: 1.9861761e-005
+beta:  1.0951938e-006
+
+xrh:  2.1666019e-005
+xih:  1.5488379e-006
+
+Miller_h: 1
+Miller_k: 1
+Miller_l: 1
+
+# crystal thickness in microns
+thickness: 25 
+
+tpad: 512
+
+
+#Grid parameters
+#size in micron
+xxmax: 1200 
+yymax: 10 
+
+#Grid parameters
+xgrid: 3200
+ygrid: 10
+
+#Grid resolution
+res_x: 555555
+res_y: 1234567
+
+
+#Integration methods: Euler, Verlet, Forest-Ruth
+Zstep_factor: 0.10
+method: 'Verlet'
+#method: 'Euler'
+#Mode: TIDP, TDP
+mode: 'TIDP'
+beam: 'Gaussian'
+waist: 250.0
+
+#Deformation of lattice: None, Sinusoidal, 
+deformation: 'Sinusoidal'
+def_amplitude: 2.0e-10
+def_period: 3.0
+
+#program settings
+nthread_fft: 4
+quiet_mode: True
+store_fields: True
+zsep: 30

@@ -21,24 +21,25 @@ Miller_l: 0
 thickness: 50 
 
 #Grid parameters
-xgrid: 3200
-ygrid: 10
+xgrid: 5200
+ygrid: 1
 
 #size in micron
 xxmax: 1200 
 yymax: 150
 #yymax: 10 
-
+x00: -500
 
 #Grid resolution
-res_x: 33333
+res_x: 555555
 res_y: 1234567
 #res_y: 10
 
-tpad: 4096
+tpad: 512
+
 
 #Integration methods: Euler, Verlet, Forest-Ruth
-Zstep_factor: 0.125
+Zstep_factor: 0.1
 method: 'Euler'
 #Mode: TIDP, TDP
 mode: 'TIDP'
@@ -58,11 +59,13 @@ waist: 250.0
 # crop_x: 1.0
 
 
-#Deformation of lattice: None, Sinusoidal, 
+#Deformation of lattice: None, Sinusoidal, ConstStrainGrad
 deformation: 'None'
-def_amplitude: 0.0
+def_amplitude: 1e-10
 def_period: 4.0
-
+def_B: 0.05
 #program settings
 nthread_fft: 4
-quiet_mode: False
+quiet_mode: True
+store_fields: True
+zsep: 100

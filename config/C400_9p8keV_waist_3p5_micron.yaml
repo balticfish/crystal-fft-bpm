@@ -2,35 +2,35 @@
 # Define Crystal Parameters
 #=============================================
 
-omega0: 8048.0  #central photon energy
+omega0: 9831.0  #central photon energy
 
-a0: 5.4307 #Silicon lattice constant in A
+a0: 3.5668 #Diamond lattice constant in A
 
 #  Refraction index = 1 - delta - i*beta :
-delta: 7.58515e-06
-beta: 1.75498e-07
+delta: 7.56212152208668442E-006
+beta:  8.17643864117176264E-009
 
-
-xrh: 0.475927E-05
-xih: 0.289862E-06
+xrh: 0.372328E-05
+xih: 0.141150E-07
 
 Miller_h: 4
-Miller_k: 4
-Miller_l: 4
+Miller_k: 0
+Miller_l: 0
 
 # crystal thickness in microns
-thickness: 50 
+thickness: 100 
 
 #Grid parameters
-xgrid: 3200
-ygrid: 10
+xgrid: 1000
+ygrid: 3
 
 #size in micron
-xxmax: 1200 
+xxmax: 300 
 yymax: 10
 #yymax: 10 
 
-x00: -500
+# x00: 'auto'
+x00: -150
 
 #Grid resolution
 res_x: 33333
@@ -40,13 +40,13 @@ res_y: 10
 tpad: 4096
 
 #Integration methods: Euler, Verlet, Forest-Ruth
-Zstep_factor: 0.05
-method: 'Verlet'
+Zstep_factor: 0.150
+method: 'Forest-Ruth'
 #Mode: TIDP, TDP
 mode: 'TIDP'
 
 beam: 'Gaussian'
-waist: 250.0
+waist: 3.50 #microns
 
 #pump from file GenesisV2
 
@@ -67,9 +67,7 @@ def_amplitude: 0.5e-10
 def_period: 4.0
 def_B: 0.25
 #program settings
-
 nthread_fft: 4
-quiet_mode: True
+quiet_mode: False
 store_fields: True
-zsep: 5
-
+zsep: 1
