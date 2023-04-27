@@ -23,7 +23,9 @@ thickness: 200
 
 #Grid parameters
 xgrid: 3200
-ygrid: 3
+ygrid: 1
+separation1: 0
+separation2: 0
 
 #size in micron
 xxmax: 800
@@ -58,7 +60,7 @@ waist: 50.0
 # zsep_GenV2: 40
 # crop_t: 1.0
 # crop_x: 1.0
-
+M: 'auto'
 #Deformation of lattice: None, Sinusoidal, ConstStrainGrad
 deformation: 'ConstStrainGrad'
 def_amplitude: 0.5e-10

@@ -22,7 +22,9 @@ class XCrystal:
 
         self.lam = 12398.0 / self.omega  * 1.0e-10
         self.K0 = 2.0 * np.pi / self.lam #modululs of k vector
+        self.K00 = 2.0 * np.pi / self.lam0 #modululs of k vector
         self.convr = self.K0 # 'convr' to convert meters to dimensionless units
+          
         self.c = sp_const.c
         self.hbar = sp_const.hbar / sp_const.e 
 
@@ -32,6 +34,7 @@ class XCrystal:
         self.Miller_l = self.config['Miller_l']
         
         self.d = np.sqrt(self.a0**2 / (self.Miller_h**2 + self.Miller_k**2 + self.Miller_l**2)) * self.convr #interplanar spacing
+        #self.d = np.sqrt(self.a0**2 / (self.Miller_h**2 + self.Miller_k**2 + self.Miller_l**2)) * self.convr0 #interplanar spacing
         self.dm = self.d / self.convr #interplanar spacing [m]
         
         self.alphaB = np.arcsin(self.lam0 / self.dm / 2.0)
@@ -51,7 +54,8 @@ class XCrystal:
         self.nthread_fft = self.config['nthread_fft']
         
         self.HH = self.config['thickness'] * 1.0e-6 / 2.0 * self.convr
-        
+        self.sep1=self.config['separation1'] * 1.0e-6 * self.convr
+        self.sep2=self.config['separation2'] * 1.0e-6 * self.convr
         self.method = self.config['method']
         self.quiet = self.config['quiet_mode']
         self.store_fields = self.config['store_fields']
@@ -62,20 +66,17 @@ class XCrystal:
         
         self.xxmax = self.config['xxmax'] * 1.0e-6 * self.convr # grid size in x
         self.yymax = self.config['yymax'] * 1.0e-6 * self.convr # grid size in y 
-        self.dxx = self.config['res_x'] # grid resolution, x
-        self.dyy = self.config['res_y'] #self.yymax # grid resolution, y
+
+        
 
         self.xgrid = self.config['xgrid']
         self.ygrid = self.config['ygrid']
         self.tpad = self.config['tpad']
         
-        self.nxarr = 2.0 * self.xxmax / self.dxx
-        self.nyarr = 2.0 * self.yymax / self.dyy
+       # self.nxarr = 2.0 * self.xxmax / self.dxx
+        #self.nyarr = 2.0 * self.yymax / self.dyy
 
-        #self.xx = self.dxx * np.linspace(-self.nxarr/2, self.nxarr/2+1, self.xgrid)
-        #self.yy = self.dyy * np.linspace(-self.nyarr/2, self.nyarr/2+1, self.ygrid)
-        # self.xx = self.dxx * np.linspace(-self.nxarr/2, self.nxarr/2, self.xgrid+1)
-        #self.yy = self.dyy * np.linspace(-self.nyarr/2, self.nyarr/2, self.ygrid+1)
+
         self.xx =  np.linspace(-self.xxmax, self.xxmax, self.xgrid)
         self.yy =  np.linspace(-self.yymax, self.yymax, self.ygrid)
         
@@ -150,8 +151,11 @@ class XCrystal:
             self.field = None
         else:
             self.field = field * np.exp(1j * (np.sin(self.alpha) - self.k0) * self.Xx)
-
-        self.M = np.int(np.round(0.9*self.xxmax / self.Z / np.tan(self.alpha))) # number of steps in z   
+        if self.config['M'] == 'auto':
+            self.M = np.int(np.round(0.9*self.xxmax / self.Z / np.tan(self.alpha))) # number of steps in z  
+        else:
+            self.M= self.config['M']  
+ 
         self.M_store = int(self.M / self.zsep)
         
         self.deformation_model = self.config['deformation']
@@ -184,7 +188,11 @@ class XCrystal:
                     for k in range(self.M):
                         self.u[i,j,k]=u_x[i]
 
-                        
+        if self.deformation_model == 'ThermalBump':
+            name = self.config['uz_filename']
+            self.u = np.load('/global/cscratch1/sd/krzywins/CRYSTALBPMExpl/crystal-fft-bpm/examples/'+ name)*self.convr*1
+       
+                    
        
             
         if self.deformation_model == 'None':
@@ -207,7 +215,8 @@ class XCrystal:
         
         Reflectivity = np.sum(np.abs(U1f)**2.0) / np.sum(np.abs(xbpm.E_in)**2)
         Transmission = np.sum(np.abs(U2f)**2.0) / np.sum(np.abs(xbpm.E_in)**2)
-        
+        PhaseRefl = np.angle(np.sum(U1f))
+        PhaseTrans = np.angle(np.sum(U2f))
         self.U1f = U1f
         self.U2f = U2f
         #self.U1f = U1f * np.exp(1j * (np.sin(self.alpha) - self.k0) * self.Xx)
@@ -215,12 +224,15 @@ class XCrystal:
         
         self.Reflectivity = Reflectivity
         self.Transmission = Transmission
+        self.PhaseRefl = PhaseRefl 
+        self.PhaseTrans = PhaseTrans
+
         
         if self.store_fields:
             self.U1_field = xbpm.U1_store
             self.U2_field = xbpm.U2_store
         
         
-        print('Delta theta: ', self.Delta_alpha, '; Reflectivity: ', Reflectivity, '; Transmission: ', Transmission)
+        print('Delta theta: ', self.Delta_alpha, '; Reflectivity: ', Reflectivity, '; Transmission: ', Transmission, 'PhaseRefl', PhaseRefl )
         
         

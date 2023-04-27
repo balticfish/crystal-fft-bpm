@@ -41,7 +41,7 @@ if __name__ == '__main__':
     
     Npoints = n_par * n_cycle
         
-    delta_theta = np.linspace(0,30e-6, Npoints)    
+    delta_theta = np.linspace(0e-6,30e-6, Npoints)    
     
     full_run = np.zeros((n_cycle, n_par, 3))
         

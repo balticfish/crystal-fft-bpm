@@ -19,10 +19,11 @@ Miller_l: 0
 
 # crystal thickness in microns
 thickness: 100 
-
+separation1: 60
+separation2: 60
 #Grid parameters
 xgrid: 3200
-ygrid: 10
+ygrid: 1
 
 #size in micron
 xxmax: 1200 
@@ -31,13 +32,10 @@ yymax: 10
 
 x00: -600
 
-#Grid resolution
-res_x: 33333
-res_y: 10
-#res_y: 10
+
 
 tpad: 4096
-
+M: 'auto'
 #Integration methods: Euler, Verlet, Forest-Ruth
 Zstep_factor: 0.125
 method: 'Forest-Ruth'

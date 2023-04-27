@@ -21,8 +21,8 @@ Miller_l: 0
 thickness: 100 
 
 #Grid parameters
-xgrid: 1000
-ygrid: 3
+xgrid: 2000
+ygrid: 1
 
 #size in micron
 xxmax: 300 
@@ -31,7 +31,8 @@ yymax: 10
 
 # x00: 'auto'
 x00: -150
-
+separation1: 0
+separation2: 0
 #Grid resolution
 res_x: 33333
 res_y: 10
@@ -40,14 +41,15 @@ res_y: 10
 tpad: 4096
 
 #Integration methods: Euler, Verlet, Forest-Ruth
-Zstep_factor: 0.150
+Zstep_factor: 0.05
 method: 'Forest-Ruth'
 #Mode: TIDP, TDP
 mode: 'TIDP'
 
 beam: 'Gaussian'
 waist: 3.50 #microns
-
+M: 500
+M: 'auto'
 #pump from file GenesisV2
 
 # beam: 'GenesisV2'

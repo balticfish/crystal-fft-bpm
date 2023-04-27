@@ -19,7 +19,8 @@ Miller_l: 0
 
 # crystal thickness in microns
 thickness: 50 
-
+separation1: 0
+separation2: 0
 #Grid parameters
 xgrid: 5200
 ygrid: 1
@@ -28,7 +29,7 @@ ygrid: 1
 xxmax: 1200 
 yymax: 150
 #yymax: 10 
-x00: -500
+x00: -300
 
 #Grid resolution
 res_x: 555555
@@ -45,7 +46,7 @@ method: 'Euler'
 mode: 'TIDP'
 
 beam: 'Gaussian'
-waist: 250.0
+waist: 150.0
 
 #pump from file GenesisV2
 
@@ -57,7 +58,7 @@ waist: 250.0
 # zsep_GenV2: 40
 # crop_t: 1.0
 # crop_x: 1.0
-
+M: 'auto'
 
 #Deformation of lattice: None, Sinusoidal, ConstStrainGrad
 deformation: 'None'

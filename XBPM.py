@@ -29,6 +29,7 @@ class XBPM:
         tr = np.ones_like(XCr.Xx, dtype=np.complex)
         idx_nonzero = self.log_h1h2(XCr)
         tr[idx_nonzero] = jv0_pp 
+    
         
         return tr 
     
@@ -38,8 +39,8 @@ class XBPM:
         jv_pp = jv(1, 2.0 * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa * d_i) 
         tr = np.zeros_like(XCr.Xx, dtype=np.complex)
         idx_nonzero = self.log_h1h2(XCr)
-        #tr[idx_nonzero] = 1j * jv_pp * np.exp(2j * XCr.k0 * u) 
         tr[idx_nonzero] = 1j * jv_pp 
+    
 
         return tr 
     
@@ -49,9 +50,7 @@ class XBPM:
         jv_pm = jv(1, 2.0 * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa * d_i) 
         tr = np.zeros_like(XCr.Xx, dtype=np.complex)
         idx_nonzero = self.log_h1h2(XCr)
-       # tr[idx_nonzero] = 1j * jv_pm * np.exp(-2j * XCr.k0 * u)
         tr[idx_nonzero] = 1j * jv_pm  
-        
         return tr 
     
     
@@ -72,9 +71,9 @@ class XBPM:
     def log_h1h2(self, XCr): 
         
        # u = params
-        
-        return (XCr.Xx >= (-XCr.HH )) * (XCr.Xx <=(XCr.HH )) # function tht defines lower and upper crystal's surfaces
 
+        return ((XCr.Xx-XCr.sep1) >= (-XCr.HH )) * ((XCr.Xx-XCr.sep1) <=(XCr.HH )) + ((XCr.Xx-XCr.sep2) >= (-XCr.HH )) * ((XCr.Xx-XCr.sep2) <=(XCr.HH )) # function tht defines lower and  upper crystal's surfaces of two crystals and position of the crystal centers
+        
 
     def PpPm(self, XCr, c_i):
         
@@ -112,9 +111,11 @@ class XBPM:
         U1prop *= dz_store
         U2prop *= dz_store
 
-        U1R = U1prop * ksh_store + U2prop * self.ksih1_p_select(XCr,d_i)* np.exp(2j * XCr.k0 *self.u[:,:,k])       
-        U2R = U2prop * ksh_store + U1prop * self.ksih1_m_select(XCr, d_i)* np.exp(-2j * XCr.k0 *self.u[:,:,k])
-      
+        U1R = U1prop * (ksh_store) + U2prop * self.ksih1_p_select(XCr,d_i)* np.exp(2j * XCr.k0 *self.u[:,:,k])       
+        U2R = U2prop * (ksh_store) + U1prop * self.ksih1_m_select(XCr, d_i)* np.exp(-2j * XCr.k0 *self.u[:,:,k])
+
+   
+
 
         return U1R, U2R
 
@@ -143,8 +144,6 @@ class XBPM:
                     U2 = U2
                     
             if XCr.store_fields and (k % XCr.zsep == 0):
-                #self.U1_store[:,:,int(k/XCr.zsep)] = U1
-                #self.U2_store[:,:,int(k/XCr.zsep)] = U2
                 self.U1_store[:,:,int(k/XCr.zsep)] = U1 * np.exp(1j * (np.sin(XCr.alpha) - XCr.k0) * XCr.Xx)
                 self.U2_store[:,:,int(k/XCr.zsep)] = U2 * np.exp(-1j * (np.sin(XCr.alpha) - XCr.k0) * XCr.Xx)
         return U1, U2

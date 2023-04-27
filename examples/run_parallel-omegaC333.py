@@ -14,7 +14,7 @@ import XCrTools as tools
 #comment = 'Diamond_400_9831_eV'
 #comment = 'Diamond_333_12800_eV'
 
-comment = 'C333_12800_eVm6p0urad10fstmax1300xgrid2400Corr2waist250zsep100Thickness50um'
+comment = 'C333_12800_eVm6p0urad10fstmax1300xgrid2400waist250zsep100Thickness50um'
 
 print('Running simulation for: ', comment)
 
