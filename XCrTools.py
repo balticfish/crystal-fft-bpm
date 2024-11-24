@@ -1,3 +1,7 @@
+'''
+This file is part of fft-bpm. It is subject to the license terms in the LICENSE.txt file found in the top-level directory of this distribution and at https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. No part of fft-bpm, including this file, may be copied, modified, propagated, or distributed except according to the terms contained in the LICENSE.txt file.
+'''
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import jv
@@ -21,7 +25,7 @@ class XCrTools:
         if (alpha is None):
             alpha = XCr.alpha
         
-        return XCr.E0 * 1.0 / (1.0 + 1j * XCr.zX / XCr.zR) * np.exp(-(((((XCr.Xx - XCr.x00)**2.0 + XCr.Yy**2.0) / ((XCr.om0**2.0) * (1.0 + 1j * XCr.zX /                  XCr.zR)))))) * np.exp(1j * (np.sin(alpha) - XCr.k0) * XCr.Xx)
+        return XCr.E0 * 1.0 / (1.0 + 1j * XCr.zX / XCr.zR) * np.exp(-(((((XCr.Xx - XCr.x00)**2.0 + XCr.Yy**2.0) / ((XCr.om0**2.0) * (1.0 + 1j * XCr.zX/XCr.zR)))))) * np.exp(1j * (np.sin(alpha) - XCr.k0) * XCr.Xx)
     
 #     def Gaussian_pulse_3D_with_q(self, XCr, k=None):
 #         """
@@ -126,6 +130,29 @@ class XCrTools:
 
         return dat#_intrp #/ np.sqrt(fudge)
 
+
+
+    def apply_slit_to_E_in(self, XBPM, XCr):
+
+        # Calculate the half-widths of the slit in X and Y directions
+        half_slit_x = XCr.slit_x / 2
+        half_slit_y = XCr.slit_y / 2
+
+        # Calculate the positions relative to the center
+        relative_x = XCr.Xx - XCr.x00
+        relative_y = XCr.Yy  # Assuming Yy is already relative to the center
+
+        # Create boolean masks for X and Y dimensions
+        mask_x = (relative_x >= -half_slit_x) & (relative_x <= half_slit_x)
+        mask_y = (relative_y >= -half_slit_y) & (relative_y <= half_slit_y)
+
+        # Combine the masks to get the final mask
+        mask = mask_x & mask_y
+
+        # Apply the mask to self.E_in
+        XBPM.E_in *= mask
+        
+        
 
     def crop_3d_wavefront(self, wavefront3D, cropping_factors=[3, 3, 3]):
 

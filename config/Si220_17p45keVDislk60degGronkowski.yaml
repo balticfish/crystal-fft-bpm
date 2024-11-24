@@ -1,0 +1,106 @@
+#=============================================
+# Define Crystal Parameters
+#=============================================
+
+omega0: 17450  #central photon energy
+
+a0: 5.4307 #Diamond lattice constant in A
+
+#  Refraction index n = 1 - delta - i*beta :
+
+delta1: 1.5904679835494718E-006
+beta1: 8.1528117003473875E-009
+delta2: 1.5904679835494718E-006
+beta2: 8.1528117003473875E-009
+
+xrh1: 1.921E-06
+xih1: 1.55E-08
+xrh2: 1.921E-06
+xih2: 1.55E-08
+
+#xrh: 0.192440E-05
+#xih: 0.153347E-07
+
+
+
+Miller_h: 2
+Miller_k: 2
+Miller_l: 0
+
+# crystal thickness in microns
+thickness: 430
+d_film: 0
+xs: 0   # moving crystal 0 um with respect to origin in x-coordinate
+separation1: 0
+separation2: 0
+asymm_angle: 90
+
+#Grid parameters
+xgrid: 250
+ygrid: 150
+#size in micron
+xxmax: 200 
+yymax: 400
+#yymax: 10 
+
+# x00: 'auto'
+x00: -30
+
+#Grid resolution
+res_x: 33333
+res_y: 10
+#res_y: 10
+M: 500
+#M: 'auto'
+tpad: 4096
+
+#Integration methods: Euler, Verlet, Forest-Ruth
+Zstep_factor: 0.1
+method: 'Verlet'
+#Mode: TIDP, TDP
+mode: 'TIDP'
+
+beam: 'Gaussian'
+waist: 4000 #microns
+slit_x: 5 # microns slit width
+slit_y: 2000 # microns slit width
+
+
+#pump from file GenesisV2
+
+# beam: 'GenesisV2'
+# fname_GenV2: 'pump-test-GenV2.dfl'
+# ncar_GenV2: 251
+# dgrid_GenV2: 1.2e-3
+# mag_factor_GenV2: 1.0
+# zsep_GenV2: 40
+# crop_t: 1.0
+# crop_x: 1.0
+
+
+#Deformation of lattice: None, Sinusoidal, 
+#deformation: 'None'
+deformation: 'Dislocation_60degGronkowskiConfiguration'
+strain: 0
+x0d: -20
+y0d: -0 #y coordinate of dislocatio in um
+z0d: -0 #z coordinate of dislocatio in um
+slope: 0.0
+phid: 1.5707963267948966 #orientation of dislocation
+#phid: 0 #orientation of dislocation
+burgers_vector_x: 1.9200423982948915 # a0/2/sqrt(2) in A, x-component mixed 60 deg dislocation 
+burgers_vector_screw: 3.840084796589783 # a0/sqrt(2) in A           
+vSi: 0.22 # Poisson ratio
+dudz: 0.00
+depth: 0
+B_size: 100
+CrSize: 800
+
+def_amplitude: 0.5e-10
+def_period: 4.0
+def_B: 0.25
+#program settings
+nthread_fft: 4
+quiet_mode: True
+store_fields: True
+zsep: 1

@@ -1,0 +1,71 @@
+#=============================================
+# Define Crystal Parameters
+#=============================================
+
+omega0: 9831.0  #central photon energy
+
+a0: 3.5668194616854 #Diamond lattice constant in A
+
+#  Refraction index n = 1 - delta - i*beta :
+#  from XOP toolkit-> Optics -> Crystals -> XINPRO
+delta: 7.5628e-06
+beta:  7.32545e-09
+
+# susceptibilties from XOP toolkit-> Optics -> Crystals -> XINPRO
+xrh: 0.372328E-05
+xih: 0.141150E-07
+#reflection type
+Miller_h: 4
+Miller_k: 0
+Miller_l: 0
+
+# crystal thickness in microns and
+thickness: 82
+asymm_angle: 90.0 #deg
+
+#Grid parameters, number of grid points
+xgrid: 4000
+ygrid: 1
+
+# simulation  window size in micron
+xxmax: 16000 
+yymax: 10
+
+#Integration methods: Euler, Verlet, Forest-Ruth
+Zstep_factor: 0.1 #  defined as:
+ #Z = np.abs(Zstep_factor * np.pi/np.real((delta - 1i*beta)**2))/k  #  Z - step in z
+method: 'Verlet'
+#Mode: TIDP, TDP
+mode: 'TIDP'
+# number of propagation steps
+M: 2000
+#M: 'auto'
+
+# type of x-ray beam
+beam: 'Gaussian'
+# x00: 'auto'
+x00: -500  # initial beam position in microns
+waist: 150 #microns
+#pump from file GenesisV2
+# beam: 'GenesisV2'
+# fname_GenV2: 'pump-test-GenV2.dfl'
+# ncar_GenV2: 251
+# dgrid_GenV2: 1.2e-3
+# mag_factor_GenV2: 1.0
+# zsep_GenV2: 40
+# crop_t: 1.0
+# crop_x: 1.0
+
+#Deformation of lattice: None, Sinusoidal, 
+deformation: 'None'
+# sinusoidal deformation paramters
+def_amplitude: 0.5e-10
+def_period: 4.0
+#constant stress gradient parameter
+def_B: 0.25
+
+#program settings
+nthread_fft: 4
+quiet_mode: True
+store_fields: True
+zsep: 1 # separation between number of steps in z for which the field distribution is saved

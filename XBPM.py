@@ -1,8 +1,14 @@
+'''
+This file is part of fft-bpm. It is subject to the license terms in the LICENSE.txt file found in the top-level directory of this distribution and at https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. No part of fft-bpm, including this file, may be copied, modified, propagated, or distributed except according to the terms contained in the LICENSE.txt file.
+'''
+
 import numpy as np
 from scipy.special import jv
 import time
 import XCrTools as tools
-
+import matplotlib.pyplot as plt
+import matplotlib
+from tqdm import tqdm
 
 class XBPM:
 
@@ -16,6 +22,9 @@ class XBPM:
             XCr.qprint('Running with imported field')
         self.u = XCr.u
         
+        self.xtools.apply_slit_to_E_in(self, XCr)
+        #self.E_in *= ((XCr.Xx - XCr.x00)>= -XCr.slit_x/2)*((XCr.Xx - XCr.x00)<= XCr.slit_x/2)*((XCr.Yy)>= -XCr.slit_y/2)*((XCr.Yy)<= XCr.slit_y/2)
+        
         ix, iy = np.shape(self.E_in)
         
         self.U1_store = np.zeros((ix, iy, XCr.M_store+1), dtype=complex)
@@ -24,60 +33,98 @@ class XBPM:
     
     def ksih0_select(self, XCr, params):
         
-        d_i = params
-        jv0_pp = jv(0, 2.0 * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa * d_i) * np.exp((XCr.ele_susceptH * XCr.Z * d_i / 2.0 / XCr.cosa)**2 / 2.0)
-        tr = np.ones_like(XCr.Xx, dtype=np.complex)
-        idx_nonzero = self.log_h1h2(XCr)
-        tr[idx_nonzero] = jv0_pp 
-    
-        
-        return tr 
+        d_i,k = params
+        jv0_pp1 = jv(0, 2.0 * XCr.ele_susceptH1 * XCr.Z / 2.0 / XCr.cosa * d_i) * np.exp((XCr.ele_susceptH1 * XCr.Z * d_i / 2.0 / XCr.cosa)**2 / 2.0) -1
+        jv0_pp2 = jv(0, 2.0 * XCr.ele_susceptH2 * XCr.Z / 2.0 / XCr.cosa * d_i) * np.exp((XCr.ele_susceptH2 * XCr.Z * d_i / 2.0 / XCr.cosa)**2 / 2.0) -1
+          
+        tr1 =np.zeros_like(XCr.Xx, dtype=complex)
+        tr2 = np.zeros_like(XCr.Xx, dtype=complex)
+        idx_nonzero1 = self.log_h1h2_film(XCr,k)
+        idx_nonzero2 = self.log_h1h2(XCr,k)
+        tr1[idx_nonzero1] = jv0_pp1
+        tr2[idx_nonzero2] = jv0_pp2
+        tr= 1+tr1+tr2
+
+        return tr
+ 
     
     def ksih1_p_select(self, XCr, params):
         
-        d_i = params
-        jv_pp = jv(1, 2.0 * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa * d_i) 
-        tr = np.zeros_like(XCr.Xx, dtype=np.complex)
-        idx_nonzero = self.log_h1h2(XCr)
-        tr[idx_nonzero] = 1j * jv_pp 
-    
-
+        d_i,k = params
+        jv_pp1 = jv(1, 2.0 * XCr.ele_susceptH1 * XCr.Z / 2.0 / XCr.cosa * d_i) 
+        jv_pp2 = jv(1, 2.0 * XCr.ele_susceptH2 * XCr.Z / 2.0 / XCr.cosa * d_i) 
+        tr1 = np.zeros_like(XCr.Xx, dtype=complex)
+        tr2 = np.zeros_like(XCr.Xx, dtype=complex)
+        idx_nonzero1 = self.log_h1h2_film(XCr,k)
+        idx_nonzero2 = self.log_h1h2(XCr,k)
+        tr1[idx_nonzero1] = 1j * jv_pp1 
+        tr2[idx_nonzero2] = 1j * jv_pp2
+        tr=tr1+tr2
+        #if k==1:
+           # print('ksih1_p_select 1995', tr[995])
+           # print('ksih1_p_select 2005', tr[1005])
+           # plt.plot(XCr.xx/XCr.convr*1e9,np.real(tr),'r+')
+           # plt.plot(XCr.xx/XCr.convr*1e9,np.imag(tr),'g+')
+           # plt.xlim(-50,10)
+           # plt.title('ksih1_p_select')
+           # plt.show()
         return tr 
+  
     
     def ksih1_m_select(self, XCr, params):
         
-        d_i = params
-        jv_pm = jv(1, 2.0 * XCr.ele_susceptH * XCr.Z / 2.0 / XCr.cosa * d_i) 
-        tr = np.zeros_like(XCr.Xx, dtype=np.complex)
-        idx_nonzero = self.log_h1h2(XCr)
-        tr[idx_nonzero] = 1j * jv_pm  
+        d_i,k = params
+        jv_pp1 = jv(1, 2.0 * XCr.ele_susceptH1 * XCr.Z / 2.0 / XCr.cosa * d_i) 
+        jv_pp2 = jv(1, 2.0 * XCr.ele_susceptH2 * XCr.Z / 2.0 / XCr.cosa * d_i) 
+        tr1 = np.zeros_like(XCr.Xx, dtype=complex)
+        tr2 = np.zeros_like(XCr.Xx, dtype=complex)
+        idx_nonzero1 = self.log_h1h2_film(XCr,k)
+        idx_nonzero2 = self.log_h1h2(XCr,k)
+        tr1[idx_nonzero1] = 1j * jv_pp1 
+        tr2[idx_nonzero2] = 1j * jv_pp2
+        tr=tr1+tr2 
         return tr 
     
     
     def Dz0(self, XCr, params):
         
-        d_i = params
+        d_i,k = params
 
-        return np.exp(1j * XCr.Z / 2.0 / XCr.cosa * self.epsxh0x(XCr) * d_i) # 'potential' part of propagator related to average susceptibility
+        return np.exp(1j * XCr.Z / 2.0 / XCr.cosa * self.epsxh0x(XCr,k) * d_i) # 'potential' part of propagator related to average susceptibility
     
     
-    def epsxh0x(self, XCr): 
+    def epsxh0x(self, XCr,params): 
         
-       # u = params
+        k = params
         
-        return XCr.epsxh0 * self.log_h1h2(XCr) # function that  defines distribution of average susceptibility
+        return (XCr.epsxh01 * self.log_h1h2_film(XCr,k)+XCr.epsxh02 * self.log_h1h2(XCr,k)) # function that  defines distribution of average susceptibility
     
     
-    def log_h1h2(self, XCr): 
+    def log_h1h2(self, XCr,params): 
         
-       # u = params
+        k = params
+        
+        if XCr.cr_geometry == 'from_file':
+            crd = XCr.cr_mask[...,k]
+            
+        else:    
+            crd=(XCr.HH > (np.cos(XCr.asymm_angle)*(XCr.Xx-XCr.xs)-np.sin(XCr.asymm_angle)*XCr.z[k] )) * (-XCr.HH <(np.cos(XCr.asymm_angle)*(XCr.Xx-XCr.xs)-np.sin(XCr.asymm_angle)*XCr.z[k] ))*((XCr.Xx-XCr.xs) >= -XCr.CrSize/2)*((XCr.Xx-XCr.xs) < XCr.CrSize/2)
 
-        return ((XCr.Xx-XCr.sep1) >= (-XCr.HH )) * ((XCr.Xx-XCr.sep1) <=(XCr.HH )) + ((XCr.Xx-XCr.sep2) >= (-XCr.HH )) * ((XCr.Xx-XCr.sep2) <=(XCr.HH )) # function tht defines lower and  upper crystal's surfaces of two crystals and position of the crystal centers
+        return crd
+    
+    
+    def log_h1h2_film(self, XCr,params): 
         
+        k = params
+
+        crd=(0 >= (np.cos(XCr.asymm_angle)*(XCr.Xx-XCr.xs+XCr.HH)-np.sin(XCr.asymm_angle)*XCr.z[k] )) * (-XCr.d_film <=(np.cos(XCr.asymm_angle)*(XCr.Xx-XCr.xs+XCr.HH)-np.sin(XCr.asymm_angle)*XCr.z[k] ))*((XCr.Xx-XCr.xs+XCr.HH) >= -XCr.CrSize/2)*((XCr.Xx-XCr.xs+XCr.HH) < XCr.CrSize/2)
+
+        return crd
+
 
     def PpPm(self, XCr, c_i):
         
-        log_pR = XCr.Kx**2.0 + XCr.Ky**2.0 < 1.0
+        log_pR = XCr.Kx**2.0 + XCr.Ky**2.0 < 0.1
         
         PMinusR = np.sqrt(1.0 - (XCr.Kx - XCr.k0)**2.0 - XCr.Ky**2.0) * log_pR 
         DkMinusR = np.exp(1j * np.dot(PMinusR, c_i * XCr.Z)) 
@@ -97,7 +144,7 @@ class XBPM:
         
         U1prop = self.xtools.ifft2(np.fft.ifftshift(G11 * DkMinusR, axes=(0,1))) 
         U2prop = self.xtools.ifft2(np.fft.ifftshift(G22 * DkPlusR, axes=(0,1))) 
-        
+
         return U1prop, U2prop
     
     
@@ -105,18 +152,20 @@ class XBPM:
         
         XCr, k, d_i = params
         
-        dz_store = self.Dz0(XCr,d_i) # stored for later use 
-        ksh_store = self.ksih0_select(XCr,d_i) # stored for later use 
-                
+        dz_store = self.Dz0(XCr,[d_i,k]) # stored for later use 
+        ksh_store = self.ksih0_select(XCr,[d_i,k]) # stored for later use 
+        #ksih1_m = self.ksih1_p_select(XCr,[d_i,k])* np.exp(2j * XCr.k0 *XCr.Rock_angle*XCr.z1[k])
+        #ksih1_p = self.ksih1_p_select(XCr,[d_i,k])* np.exp(-2j * XCr.k0 *XCr.Rock_angle*XCr.z1[k]) 
+        #U1R = U1prop * ksh_store*dz_store + U2prop *ksih1_m 
+        #U2R = U2prop * ksh_store*dz_store + U1prop *ksih1_p
+        ksih1_m = self.ksih1_p_select(XCr,[d_i,k])* np.exp(2j * XCr.k0 *self.u[:,:,k])
+        ksih1_p = self.ksih1_p_select(XCr,[d_i,k])* np.exp(-2j * XCr.k0 *self.u[:,:,k])
         U1prop *= dz_store
         U2prop *= dz_store
+        U1R = U1prop * ksh_store + U2prop * self.ksih1_p_select(XCr,[d_i,k])* np.exp(2j * XCr.k0 *self.u[:,:,k])       
+        U2R = U2prop * ksh_store + U1prop * self.ksih1_m_select(XCr, [d_i,k])* np.exp(-2j * XCr.k0 *self.u[:,:,k])
 
-        U1R = U1prop * (ksh_store) + U2prop * self.ksih1_p_select(XCr,d_i)* np.exp(2j * XCr.k0 *self.u[:,:,k])       
-        U2R = U2prop * (ksh_store) + U1prop * self.ksih1_m_select(XCr, d_i)* np.exp(-2j * XCr.k0 *self.u[:,:,k])
-
-   
-
-
+                
         return U1R, U2R
 
 
@@ -125,8 +174,8 @@ class XBPM:
         U1 = U1R.copy()
         U2 = U2R.copy()
 
-
-        for k in range(XCr.M):
+        plt.show()
+        for k in tqdm(range(XCr.M), desc='Beam propagation progress'):
 
             for i in range(0, len(XCr.c_i)):
                 op_cff = len(XCr.c_i) - 1 - i
@@ -146,6 +195,10 @@ class XBPM:
             if XCr.store_fields and (k % XCr.zsep == 0):
                 self.U1_store[:,:,int(k/XCr.zsep)] = U1 * np.exp(1j * (np.sin(XCr.alpha) - XCr.k0) * XCr.Xx)
                 self.U2_store[:,:,int(k/XCr.zsep)] = U2 * np.exp(-1j * (np.sin(XCr.alpha) - XCr.k0) * XCr.Xx)
+
+            plt.show()
+            
+            
         return U1, U2
                  
                     

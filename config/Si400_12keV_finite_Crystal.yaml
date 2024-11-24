@@ -1,0 +1,96 @@
+#=============================================
+# Define Crystal Parameters
+#=============================================
+
+omega0: 12000.0  #central photon energy
+
+a0: 5.4307 #Si lattice constant in A
+
+#  Refraction index n = 1 - delta - i*beta :
+delta1: 3.3827759208087944E-006
+beta1:  3.5932730614093667E-008
+xrh1: 3.6992558765661601E-006
+xih1: 7.1429541025217257E-008
+
+delta2: 3.3827759208087944E-006
+beta2:  3.5932730614093667E-008
+xrh2: 3.6992558765661601E-006
+xih2: 7.1429541025217257E-008
+
+
+Miller_h: 4
+Miller_k: 0
+Miller_l: 0
+
+
+d_film: 0
+xs: 0   # moving crystal 0 um with respect to origin in x-coordinate
+# crystal thickness in microns and
+thickness: 300
+asymm_angle: 90.0 #deg
+
+#Grid parameters, number of grid points
+xgrid: 300
+ygrid: 3
+
+# simulation  window size in micron
+xxmax: 300 
+yymax: 1000
+#yymax: 10 
+
+#Integration methods: Euler, Verlet, Forest-Ruth
+Zstep_factor: 0.05 #  defined as:
+ #Z = np.abs(Zstep_factor * np.pi/np.real((delta - 1i*beta)**2))/k  #  Z - step in z
+method: 'Verlet'
+#Mode: TIDP, TDP
+mode: 'TIDP'
+# number of propagation steps
+M: 1000
+#M: 'auto'
+tpad: 4096
+# type of x-ray beam
+beam: 'Gaussian'
+
+slit_x: 10000 # microns slit width
+slit_y: 10000 # microns slit widt
+# x00: 'auto'
+x00: -100  # initial beam position in microns
+waist: 4000 #microns
+slit_x: 100000 # microns slit width
+slit_y: 100000 # microns slit width
+#pump from file GenesisV2
+
+# beam: 'GenesisV2'
+# fname_GenV2: 'pump-test-GenV2.dfl'
+# ncar_GenV2: 251
+# dgrid_GenV2: 1.2e-3
+# mag_factor_GenV2: 1.0
+# zsep_GenV2: 40
+# crop_t: 1.0
+# crop_x: 1.0
+
+
+#Deformation of lattice: None, Sinusoidal, 
+deformation: 'None'
+strain: 0
+x0d: 0
+y0d: -0 #y coordinate of dislocatio in um
+z0d: -0 #z coordinate of dislocatio in um
+slope: 0.0
+phid: 1.5707963267948966 #orientation of dislocation
+#phid: 0 #orientation of dislocation
+burgers_vector_x: 1.9200423982948915 # a0/2/sqrt(2) in A, x-component mixed 60 deg dislocation 
+burgers_vector_screw: 3.840084796589783 # a0/sqrt(2) in A           
+vSi: 0.22 # Poisson ratio
+dudz: 0.00
+depth: 0
+B_size: 100
+CrSize: 100
+def_amplitude: 0.5e-10
+def_period: 4.0
+def_B: 0.25
+#program settings
+nthread_fft: 4
+quiet_mode: True
+store_fields: True
+zsep: 1

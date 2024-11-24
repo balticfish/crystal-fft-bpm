@@ -1,0 +1,90 @@
+#=============================================
+# Define Crystal Parameters
+#=============================================
+
+omega0: 17450.0  #central photon energy
+
+a0: 5.4307 #Diamond lattice constant in A
+
+#  Refraction index n = 1 - delta - i*beta :
+
+delta: 1.5904679835494718E-006
+beta: 8.1528117003473875E-009
+
+
+xrh: 1.4034932345584149E-006
+xih: 1.5958203730559318E-008
+ 
+Miller_h: 4
+Miller_k: 4
+Miller_l: 0
+
+# crystal thickness in microns
+thickness: 429
+separation1: 0
+separation2: 0
+asymm_angle: 90
+#Grid parameters
+xgrid: 150
+ygrid: 270
+
+#size in micron
+xxmax: 200 
+yymax: 450
+#yymax: 10 
+
+# x00: 'auto'
+x00: 0
+
+#Grid resolution
+res_x: 33333
+res_y: 10
+#res_y: 10
+M: 500
+#M: 'auto'
+tpad: 4096
+
+#Integration methods: Euler, Verlet, Forest-Ruth
+Zstep_factor: 0.1
+method: 'Verlet'
+#Mode: TIDP, TDP
+mode: 'TIDP'
+
+beam: 'Gaussian'
+waist: 4000 #microns
+slit_x: 10 # microns slit width
+slit_y: 10000 # microns slit width
+#pump from file GenesisV2
+
+# beam: 'GenesisV2'
+# fname_GenV2: 'pump-test-GenV2.dfl'
+# ncar_GenV2: 251
+# dgrid_GenV2: 1.2e-3
+# mag_factor_GenV2: 1.0
+# zsep_GenV2: 40
+# crop_t: 1.0
+# crop_x: 1.0
+
+
+#Deformation of lattice: None, Sinusoidal, 
+#deformation: 'None'
+deformation: 'Dislocation_60deg'
+x0d: 40
+y0d: -100 #y coordinate of dislocatio in um
+z0d: -0 #z coordinate of dislocatio in um
+slope: 0.0
+#phid: 1.5707963267948966 #orientation of dislocation
+phid: 0 #orientation of dislocation
+burgers_vector_x: 1.9200423982948915 # a0/2/sqrt(2) in A, x-component mixed 60 deg dislocation 
+burgers_vector_screw: 3.840084796589783 # a0/sqrt(2) in A           
+v: 0.22 # Poisson ratio
+
+
+def_amplitude: 0.5e-10
+def_period: 4.0
+def_B: 0.25
+#program settings
+nthread_fft: 4
+quiet_mode: True
+store_fields: True
+zsep: 1

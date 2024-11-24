@@ -1,0 +1,79 @@
+#=============================================
+# Define Crystal Parameters
+#=============================================
+
+omega0: 6000  #central photon energy
+
+a0: 5.4307 #Silicon lattice constant in A
+
+#  Refraction index = 1 - delta - i*beta :
+delta: 1.37282e-05
+beta: 5.48285e-07
+
+xrh:  0.147873E-04
+xih: 0.766176E-06
+
+Miller_h: 1
+Miller_k: 1
+Miller_l: 1
+
+# crystal thickness in microns
+thickness: 10 
+asymm_angle: 0
+#Grid prameters
+xgrid: 1000
+ygrid: 1
+
+#size in micron
+xxmax: 1000 
+yymax: 150
+#yymax: 10 
+
+
+#Grid resolution
+res_x: 555555
+res_y: 1234567
+#res_y: 10
+
+tpad: 512
+
+
+#Integration methods: Euler, Verlet, Forest-Ruth
+Zstep_factor: 0.01
+method: 'Verlet'
+
+#Mode: TIDP, TDP
+mode: 'TIDP'
+M: 40000
+#M: 'auto'
+beam: 'Gaussian'
+waist: 100.0
+
+# x00: 'auto'
+x00: -200
+#pump from file GenesisV2
+
+# beam: 'GenesisV2'
+# fname_GenV2: 'pump-test-GenV2.dfl'
+# ncar_GenV2: 251
+# dgrid_GenV2: 1.2e-3
+# mag_factor_GenV2: 1.0
+# zsep_GenV2: 40
+# crop_t: 1.0
+# crop_x: 1.0
+
+
+#Deformation of lattice: None, Sinusoidal, 
+#deformation: 'None'
+deformation: 'Bend Spectrometer'
+def_B: 0.25  # strain gradient parameter
+R: 0.5 # crystal bend redius in m
+v: 0.27 #the Poisson ratio
+def_amplitude: 0.0
+def_period: 4.0
+
+#program settings
+nthread_fft: 4
+quiet_mode: True
+store_fields: True
+zsep: 10
