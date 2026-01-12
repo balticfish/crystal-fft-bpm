@@ -1,0 +1,79 @@
+# --- Physics & Lattice ---
+omega0: 12800.0
+a0: 3.56679
+Miller_h: 3
+Miller_k: 3
+Miller_l: 3
+
+# --- Susceptibility (Branch 1) ---
+delta1: 4.45674658655637046E-006
+beta1: 2.85960537412047332E-009
+xrh1: 0.145194E-05
+xih1: 0.318424E-08
+
+# --- Susceptibility (Branch 2) ---
+delta2: 4.45674658655637046E-006
+beta2: 2.85960537412047332E-009
+xrh2: 0.145194E-05
+xih2: 0.318424E-08
+
+# --- Grid & Geometry ---
+xgrid: 1200
+ygrid: 1
+res_x: 0
+res_y: 0
+xxmax: 2000
+yymax: 10
+asymm_angle: 0
+thickness: 50
+width: 0
+d_film: 0
+xs: 25
+x00: 'auto'
+separation1: 0
+separation2: 0
+CrSize: 30000000
+geometry: 'not_from_file'
+geometry_file: 'None'
+
+# --- Numerical Integration ---
+M: 'auto'
+tpad: 0
+Zstep_factor: 0.1
+method: 'Forest-Ruth'
+mode: 'TIDP'
+zsep: 100
+
+# --- Beam Properties ---
+beam: 'Gaussian'
+waist: 50.0
+slit_x: 1000
+slit_y: 1000
+time_dependent: 'true'
+tgrid: 2600
+tmax: 1300.0E-15
+sigma_t: 10.0E-15
+
+# --- Deformation & Dislocations ---
+deformation: 'None'
+strain: 0
+uz_filename: 'None'
+x0d: 0
+y0d: 0
+z0d: 0
+slope: 0
+phid: 0
+burgers_vector_x: 0
+burgers_vector_screw: 0
+v: 0
+dudz: 0
+depth: 0
+B_size: 0
+def_amplitude: 0.0
+def_period: 4.0
+def_B: 0
+
+# --- Program Settings ---
+nthread_fft: 4
+quiet_mode: True
+store_fields: True

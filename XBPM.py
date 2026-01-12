@@ -60,14 +60,6 @@ class XBPM:
         tr1[idx_nonzero1] = 1j * jv_pp1 
         tr2[idx_nonzero2] = 1j * jv_pp2
         tr=tr1+tr2
-        #if k==1:
-           # print('ksih1_p_select 1995', tr[995])
-           # print('ksih1_p_select 2005', tr[1005])
-           # plt.plot(XCr.xx/XCr.convr*1e9,np.real(tr),'r+')
-           # plt.plot(XCr.xx/XCr.convr*1e9,np.imag(tr),'g+')
-           # plt.xlim(-50,10)
-           # plt.title('ksih1_p_select')
-           # plt.show()
         return tr 
   
     
@@ -154,14 +146,9 @@ class XBPM:
         
         dz_store = self.Dz0(XCr,[d_i,k]) # stored for later use 
         ksh_store = self.ksih0_select(XCr,[d_i,k]) # stored for later use 
-        #ksih1_m = self.ksih1_p_select(XCr,[d_i,k])* np.exp(2j * XCr.k0 *XCr.Rock_angle*XCr.z1[k])
-        #ksih1_p = self.ksih1_p_select(XCr,[d_i,k])* np.exp(-2j * XCr.k0 *XCr.Rock_angle*XCr.z1[k]) 
-        #U1R = U1prop * ksh_store*dz_store + U2prop *ksih1_m 
-        #U2R = U2prop * ksh_store*dz_store + U1prop *ksih1_p
-        ksih1_m = self.ksih1_p_select(XCr,[d_i,k])* np.exp(2j * XCr.k0 *self.u[:,:,k])
-        ksih1_p = self.ksih1_p_select(XCr,[d_i,k])* np.exp(-2j * XCr.k0 *self.u[:,:,k])
         U1prop *= dz_store
         U2prop *= dz_store
+      
         U1R = U1prop * ksh_store + U2prop * self.ksih1_p_select(XCr,[d_i,k])* np.exp(2j * XCr.k0 *self.u[:,:,k])       
         U2R = U2prop * ksh_store + U1prop * self.ksih1_m_select(XCr, [d_i,k])* np.exp(-2j * XCr.k0 *self.u[:,:,k])
 

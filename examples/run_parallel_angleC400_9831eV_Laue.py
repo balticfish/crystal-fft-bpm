@@ -8,7 +8,7 @@ import numpy as np
 from XCrystal import *
 import XCrTools as tool
 
-comment = 'angleC400_9p8keV_Laue_waist2000um_thick_82p90p00deg'
+comment = 'angleC400_9p8keV_Laue_waist2000um_thick_82_90p00deg'
 
 print('Running simulation for: ', comment)
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     
     t0 = time.time()
     
-    n_cycle = 24
+    n_cycle = 8
     n_par = 16
     
     Npoints = n_par * n_cycle

@@ -1,0 +1,79 @@
+# --- Physics & Lattice ---
+omega0: 9831.0
+a0: 3.5668
+Miller_h: 4
+Miller_k: 0
+Miller_l: 0
+
+# --- Susceptibility (Branch 1) ---
+delta1: 7.56212152208668442E-006
+beta1: 8.17643864117176264E-009
+xrh1: 0.372328E-05
+xih1: 0.141150E-07
+
+# --- Susceptibility (Branch 2) ---
+delta2: 7.56212152208668442E-006
+beta2: 8.17643864117176264E-009
+xrh2: 0.372328E-05
+xih2: 0.141150E-07
+
+# --- Grid & Geometry ---
+xgrid: 4267
+ygrid: 1
+res_x: 0
+res_y: 0
+xxmax: 1024.08
+yymax: 11.905
+asymm_angle: 0
+thickness: 120
+width: 0
+d_film: 0
+xs: 60
+x00: -240.0
+separation1: 0
+separation2: 0
+CrSize: 30000000
+geometry: 'not_from_file'
+geometry_file: 'None'
+
+# --- Numerical Integration ---
+M: 1841
+tpad: 4096
+Zstep_factor: 0.125
+method: 'Forest-Ruth'
+mode: 'TIDP'
+zsep: 10
+
+# --- Beam Properties ---
+beam: 'Gaussian'
+waist: 60.0
+slit_x: 1000
+slit_y: 1000
+time_dependent: 'true'
+tgrid: 10400
+tmax: 1000.0e-15
+sigma_t: 2.0e-15
+
+# --- Deformation & Dislocations ---
+deformation: 'ThermalBump'
+strain: 0
+uz_filename: 'uz1ns3D0p5x0p5_4267x1x1842.npy'
+x0d: 0
+y0d: 0
+z0d: 0
+slope: 0
+phid: 0
+burgers_vector_x: 0
+burgers_vector_screw: 0
+v: 0
+dudz: 0
+depth: 0
+B_size: 0
+def_amplitude: 0.5e-10
+def_period: 4.0
+def_B: 0.0
+
+# --- Program Settings ---
+nthread_fft: 4
+quiet_mode: True
+store_fields: True

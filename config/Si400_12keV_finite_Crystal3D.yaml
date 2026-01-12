@@ -1,0 +1,87 @@
+# --- Physics & Lattice ---
+omega0: 12000.0
+a0: 5.4307
+Miller_h: 4
+Miller_k: 0
+Miller_l: 0
+delta1: 0.33814E-05
+beta1: 0.36097E-07
+xrh1: 0.34306E-05
+xih1: 0.67043E-07
+delta2: 0.33814E-05
+beta2: 0.36097E-07
+xrh2: 0.34306E-05
+xih2: 0.36097E-07
+
+# --- Grid & Geometry ---
+xgrid: 300
+ygrid: 128
+res_x: 0
+res_y: 0
+xxmax: 300.0
+yymax: 100.0
+asymm_angle: 90.0
+thickness: 300.0
+width: 100.0
+d_film: 0
+xs: 0.0
+x00: -140.0
+separation1: 0
+separation2: 0
+CrSize: 100
+geometry: 'from_file'
+geometry_file: 'SiFinite.geom.npy'
+
+# --- Numerical Integration ---
+M: 1700
+tpad: 4096
+Zstep_factor: 0.05
+method: 'Euler'
+mode: 'TIDP'
+zsep: 1
+
+# --- Beam Properties ---
+beam: 'Gaussian'
+waist: 4000.0
+slit_x: 250.0
+slit_y: 100000.0
+time_dependent: 'None'
+tgrid: 0
+tmax: 0.0
+sigma_t: 0.0
+
+# --- Deformation & Dislocations ---
+deformation: 'None'
+strain: 0
+R: 0.0
+vC100: 0.008
+vC: 0.22
+vSi: 0.22
+def_B: 0.25
+x0d: 0.0
+y0d: -0.0
+z0d: -0.0
+slope: 0.0
+phid: 1.5707963267948966
+burgers_vector_x: 1.9200423982948915
+burgers_vector_screw: 3.840084796589783
+dudz: 0.0
+depth: 0
+B_size: 100
+def_amplitude: 0.5e-10
+def_period: 4.0
+
+# --- Pump & Genesis (Settings) ---
+# fname_GenV2: 'None'
+# ncar_GenV2: 0
+# dgrid_GenV2: 0.0
+# mag_factor_GenV2: 1.0
+# zsep_GenV2: 0
+# crop_t: 1.0
+# crop_x: 1.0
+# uz_filename: 'None'
+
+# --- Program Settings ---
+nthread_fft: 256
+quiet_mode: True
+store_fields: True

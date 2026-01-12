@@ -1,73 +1,91 @@
-#=============================================
-# Define Crystal Parameters
-#=============================================
+#==============================================================================
+# Crystal Simulation: Si44417keVConstanStrainGradient.yaml (75 Parameter Set)
+#==============================================================================
 
-omega0: 17000.0  #central photon energy
+# --- Physics & Lattice ---
+omega0: 17000.0            #
+a0: 5.4307                 #
+Miller_h: 4                #
+Miller_k: 4                #
+Miller_l: 4                #
+delta1: 1.6762106e-006     #
+beta1: 8.8662899e-009      #
+xrh1: 0.93998E-06          #
+xih1: 0.12961E-07          #
+delta2: 1.6762106e-006     #
+beta2: 8.8662899e-009      #
+xrh2: 0.93998E-06          #
+xih2: 0.12961E-07          #
 
-a0: 5.4307 #Silicon lattice constant in A
+# --- Grid & Geometry ---
+xgrid: 3200                #
+ygrid: 1                   #
+res_x: 33333               #
+res_y: 10                  #
+xxmax: 800.0               #
+yymax: 10.0                #
+asymm_angle: 0             #
+thickness: 200.0           #
+width: 0.0                 # Not specified in source
+d_film: 0                  #
+xs: 0.0                    #
+x00: 'auto'                #
+separation1: 0             #
+separation2: 0             #
+CrSize: 30000000           #
+geometry: 'not_from_file'  #
+geometry_file: 'None'      # Not specified in source
 
-#  Refraction index = 1 - delta - i*beta :
-delta: 1.6762106e-006
+# --- Numerical Integration ---
+M: 'auto'                  #
+tpad: 4096                 #
+Zstep_factor: 0.1          #
+method: 'Verlet'           #
+mode: 'TIDP'               #
+zsep: 1                    #
 
-beta: 8.8662899e-009
+# --- Beam Properties ---
+beam: 'Gaussian'           #
+waist: 50.0                #
+slit_x: 1000.0             #
+slit_y: 1000.0             #
+time_dependent: 'None'     #
+tgrid: 0                   
+tmax: 0.0                  
+sigma_t: 0.0               
 
-xrh: 0.93998E-06
-xih: 0.12961E-07
+# --- Deformation & Dislocations ---
+deformation: 'ConstStrainGrad' #
+strain: 0                  
+R: 0.0                     
+vC100: 0.0                 
+vC: 0.0                    
+vSi: 0.0                   
+def_B: 0.25                #
+x0d: 0.0                   
+y0d: 0.0                   
+z0d: 0.0                   
+slope: 0.0                 
+phid: 0.0                  
+burgers_vector_x: 0.0      
+burgers_vector_screw: 0.0  
+dudz: 0.0                  
+depth: 0                   
+B_size: 0                  
+def_amplitude: 0.5e-10     #
+def_period: 4.0            #
 
-Miller_h: 4
-Miller_k: 4
-Miller_l: 4
+# --- Pump & Genesis (Settings) ---
+# fname_GenV2: 'None'      
+# ncar_GenV2: 0            
+# dgrid_GenV2: 0.0         
+# mag_factor_GenV2: 1.0    
+# zsep_GenV2: 0            
+# crop_t: 1.0              
+# crop_x: 1.0              
+# uz_filename: 'None'      
 
-# crystal thickness in microns
-thickness: 200 
-
-#Grid parameters
-xgrid: 3200
-ygrid: 1
-separation1: 0
-separation2: 0
-
-#size in micron
-xxmax: 800
-yymax: 10
-#yymax: 10 
-
-x00: 'auto'
-
-#Grid resolution
-res_x: 33333
-res_y: 10
-#res_y: 10
-
-tpad: 4096
-
-#Integration methods: Euler, Verlet, Forest-Ruth
-Zstep_factor: 0.25
-method: 'Verlet'
-#Mode: TIDP, TDP
-mode: 'TIDP'
-
-beam: 'Gaussian'
-waist: 50.0
-
-#pump from file GenesisV2
-
-# beam: 'GenesisV2'
-# fname_GenV2: 'pump-test-GenV2.dfl'
-# ncar_GenV2: 251
-# dgrid_GenV2: 1.2e-3
-# mag_factor_GenV2: 1.0
-# zsep_GenV2: 40
-# crop_t: 1.0
-# crop_x: 1.0
-M: 'auto'
-#Deformation of lattice: None, Sinusoidal, ConstStrainGrad
-deformation: 'ConstStrainGrad'
-def_amplitude: 0.5e-10
-def_period: 4.0
-def_B: 0.25  # strain gradient parameter
-#program settings
-nthread_fft: 4
-quiet_mode: True
-store_fields: True
-zsep: 10
+# --- Program Settings ---
+nthread_fft: 4             #
+quiet_mode: True           #
+store_fields: True         #

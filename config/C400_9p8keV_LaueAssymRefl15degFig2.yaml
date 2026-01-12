@@ -1,100 +1,79 @@
-#=============================================
-# Define Crystal Parameters
-#=============================================
-
-omega0: 9831.0  #central photon energy
-
-a0: 3.5668194616854 #Diamond lattice constant in A
-
-#  Refraction index n = 1 - delta - i*beta :
-delta1: 7.5628e-06
-beta1:  7.32545e-09
-
-
-xrh1: 0.372328E-05
-xih1: 0.141150E-07
-
-delta2: 7.5628e-06
-beta2:  7.32545e-09
-
-
-xrh2: 0.372328E-05
-xih2: 0.141150E-07
-
+# --- Physics & Lattice ---
+omega0: 9831.0
+a0: 3.5668194616854
 Miller_h: 4
 Miller_k: 0
 Miller_l: 0
 
-# crystal thickness in microns
+# --- Susceptibility (Branch 1) ---
+delta1: 7.5628e-06
+beta1: 7.32545e-09
+xrh1: 0.372328E-05
+xih1: 0.141150E-07
+
+# --- Susceptibility (Branch 2) ---
+delta2: 7.5628e-06
+beta2: 7.32545e-09
+xrh2: 0.372328E-05
+xih2: 0.141150E-07
+
+# --- Grid & Geometry ---
+xgrid: 4000
+ygrid: 1
+res_x: 33333
+res_y: 10
+xxmax: 3000
+yymax: 10
+asymm_angle: 15
 thickness: 400
-width: 100
+width: 500
 d_film: 0
-xs: 0   # moving crystal 0 um with respect to origin in x-coordinate
+xs: 0
+x00: -1400
 separation1: 0
 separation2: 0
-asymm_angle: 15
-#Grid parameters
-xgrid: 4000
-ygrid: 3
-
+CrSize: 3000000000
 geometry: 'from_file'
-geometry_file: 'Asymm-sphere.geom.npy'
+geometry_file: 'AsymetricReflection15deg.geom.npy'
 
-#size in micron
-xxmax: 3000 
-yymax: 10
-#yymax: 10 
-
-#x00: 'auto'
-x00: -1400
-
-M: 12000
-#M: 'auto'
+# --- Numerical Integration ---
+M: 6000
 tpad: 4096
-
-#Integration methods: Euler, Verlet, Forest-Ruth
-Zstep_factor: 0.05
+Zstep_factor: 0.1
 method: 'Verlet'
-#Mode: TIDP, TDP
 mode: 'TIDP'
+zsep: 1
 
+# --- Beam Properties ---
 beam: 'Gaussian'
-waist: 350 #microns
-slit_x: 100000 # microns slit width
-slit_y: 100000 # microns slit width
-#pump from file GenesisV2
+waist: 350
+slit_x: 100000
+slit_y: 100000
+time_dependent: 'None'
+tgrid: 0
+tmax: 0
+sigma_t: 0
 
-# beam: 'GenesisV2'
-# fname_GenV2: 'pump-test-GenV2.dfl'
-# ncar_GenV2: 251
-# dgrid_GenV2: 1.2e-3
-# mag_factor_GenV2: 1.0
-# zsep_GenV2: 40
-# crop_t: 1.0
-# crop_x: 1.0
-
-
-#Deformation of lattice: None, Sinusoidal, 
+# --- Deformation & Dislocations ---
 deformation: 'None'
 strain: 0.00
+uz_filename: 'None'
 x0d: 0
-y0d: -0 #y coordinate of dislocatio in um
-z0d: -0 #z coordinate of dislocatio in um
+y0d: 0
+z0d: 0
 slope: 0.0
-phid: 1.5707963267948966 #orientation of dislocation
-#phid: 0 #orientation of dislocation
-burgers_vector_x: 1.9200423982948915 # a0/2/sqrt(2) in A, x-component mixed 60 deg dislocation 
-burgers_vector_screw: 3.840084796589783 # a0/sqrt(2) in A           
-v: 0.22 # Poisson ratio
+phid: 1.5707963267948966
+burgers_vector_x: 1.9200423982948915
+burgers_vector_screw: 3.840084796589783
+v: 0.22
 dudz: 0.00
 depth: 0
 B_size: 100
-CrSize: 800000
 def_amplitude: 0.5e-10
 def_period: 4.0
 def_B: 0.25
-#program settings
+
+# --- Program Settings ---
 nthread_fft: 4
 quiet_mode: True
 store_fields: True
-zsep: 1

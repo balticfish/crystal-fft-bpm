@@ -61,13 +61,23 @@ class XCrystal:
         self.HH = self.config['thickness'] * 1.0e-6 / 2.0 * self.convr
         self.xs = self.config['xs']*1e-6*self.convr
         self.CrSize=self.config['CrSize']*1e-6*self.convr
+        self.time_dependent=self.config['time_dependent']
+        if self.time_dependent == 'true':
+           self.tgrid = self.config['tgrid']
+           self.tmax = self.config['tmax']*1.0        
+           self.sigma_t = self.config['sigma_t'] 
+       
+   
         
         if self.config['geometry'] == 'from_file':
             self.cr_geometry = 'from_file'
             try:
                 self.cr_mask = np.load(self.config['geometry_file'])
+                print('Geometry file was provided')
             except:
                 print('No geometry file was provided')
+        else:
+            self.cr_geometry = 'none'
 
         if (self.quiet_mode == False):
             print('Quiet mode disabled. I will talk a lot...')
@@ -174,7 +184,7 @@ class XCrystal:
             
            
         if self.config['M'] == 'auto':
-            self.M = np.int(np.round(0.9*self.xxmax / self.Z / np.tan(self.alpha))) # number of steps in z  
+            self.M = int(np.round(0.9*self.xxmax / self.Z / np.tan(self.alpha))) # number of steps in z  
         else:
             self.M= self.config['M']  
  
@@ -206,17 +216,20 @@ class XCrystal:
 
         
         if self.deformation_model == 'ConstStrainGrad':
-            
+       
             self.B1 = self.config['def_B'] / self.convr
             self.u_x = self.B1 * (self.xx + self.HH)**2
-            self.u = self.u_x[:, np.newaxis, np.newaxis]
+            #self.u = self.B1 * (self.xx[:, np.newaxis, np.newaxis] + self.HH)**2
+            self.u=self.u_x[:, np.newaxis, np.newaxis] +0.0*self.z1[np.newaxis, np.newaxis, :]
+            
                         
                         
         if self.deformation_model == 'Bent Spectrometer':
             
             self.R = self.config['R'] * self.convr
             self.v = self.config['vC100']
-            self.u = self.Rock_angle * self.z1[np.newaxis, np.newaxis, :] +  1.0 / 2.0 / self.R * (self.v *self.xx[:, np.newaxis, np.newaxis]**2 + self.z1[np.newaxis, np.newaxis, :]**2)
+            self.u = (self.Rock_angle * self.z1[np.newaxis, np.newaxis, :] +  1.0 / 2.0 / self.R * (self.v *self.xx[:, np.newaxis, np.newaxis]**2 + self.z1[np.newaxis, np.newaxis, :]**2))*1
+            
 
                         
         if self.deformation_model == 'Strained film':
@@ -260,11 +273,18 @@ class XCrystal:
 
             # Compute self.u
             self.u = Amplitude * Exp_term  # Shape: (xgrid, ygrid, M)
+            
+        if self.deformation_model == 'ThermalBump':
+            
+            name = self.config['uz_filename']
+            self.u = np.load('/sdf/group/ad/beamphysics/fft-bpm/CrystalBPM_10_07_2025P/examples/'+ name) * self.convr*1
+            
+       
 
-            # for i in range(self.xgrid):
-            #     for j in range(self.ygrid):
-            #         for k in range(self.M):
-            #             self.u[i,j,k]=dudz*self.z[k]*np.exp(-(self.xx[i]-self.x00)**4/B_size**4-(self.yy[j])**2/B_size**2 -(self.z[k]+self.HH)**2/depth**2)
+        if self.deformation_model == 'None':
+            print('No deformation model was selected')
+        
+        self.qprint('Congigured deformation model')
                         
                         
                         
@@ -283,71 +303,25 @@ class XCrystal:
                         
             self.Gronkowski_Chukowski_geometry(ay1=0.8660254, ay2=-0.5, ay3=0, az1=0, az2=0, az3=1)
             
-#             # 1. Compute deltas
-#             delta_x = self.xx - x0d  # Shape: (xgrid,)
-#             delta_y = self.yy - y0d  # Shape: (ygrid,)
-#             delta_z = z - z0d        # Shape: (M,)
-
-#             # 2. Reshape for broadcasting
-#             delta_x = delta_x[:, np.newaxis, np.newaxis]     # Shape: (xgrid, 1, 1)
-#             delta_y = delta_y[np.newaxis, :, np.newaxis]     # Shape: (1, ygrid, 1)
-#             delta_z = delta_z[np.newaxis, np.newaxis, :]     # Shape: (1, 1, M)
-
-#             # 3. Compute components A, B, C
-#             A = (delta_x * ay1) + (delta_y * ay2) + (delta_z * ay3)  # Shape: (xgrid, ygrid, M)
-#             B = (delta_x * az1) + (delta_y * az2) + (delta_z * az3)  # Shape: (xgrid, ygrid, M)
-#             C = A + 1j * B  # Complex array
-
-#             # 5. Compute Term1
-#             C1 = a0d / (np.sqrt(2) * 2 * np.pi)
-#             Term1 = C1 * np.angle(C)  # Shape: (xgrid, ygrid, M)
-
-#             # 6. Compute Term2
-#             Numerator = B * A
-#             Denominator = A ** 2 + B ** 2
-#             Fraction = Numerator / Denominator
-
-#             Term2 = C1 / 2.0 * Fraction / (2 * (1 - v))  # Shape: (xgrid, ygrid, M)
-
-#             # 7. Compute self.u
-#             self.u = Term1 + Term2  # Shape: (xgrid, ygrid, M)
-            
-            # for i in range(self.xgrid):
-            #     for j in range(self.ygrid):
-            #         for k in range(self.M):
-            #             self.u[i,j,k]= 1*a0d/np.sqrt(2)/2/np.pi*(np.angle(((self.xx[i]-x0d)*az1+(self.yy[j]-y0d)*az2+(z[k]-z0d)*az3)*1j+((self.xx[i]-x0d)*ay1+(self.yy[j]-y0d)*ay2+(z[k]-z0d)*ay3)))+1*a0d/np.sqrt(2)/2/np.pi/2*(((self.xx[i]-x0d)*az1+(self.yy[j]-y0d)*az2+(z[k]-z0d)*az3)*((self.xx[i]-x0d)*ay1+(self.yy[j]-y0d)*ay2+(z[k]-z0d)*ay3)/(((self.xx[i]-x0d)*ay1+(self.yy[j]-y0d)*ay2+(z[k]-z0d)*ay3)**2+((self.xx[i]-x0d)*az1+(self.yy[j]-y0d)*az2+(z[k]-z0d)*az3)**2)/(2*(1-v)))          
+    
                         
         if self.deformation_model == 'Dislocation_60degGronkowskiConfiguration':
             
             #i=np.array([1,-1,0])/np.sqrt(2)
             #j=np.array([-1,-1,1])/np.sqrt(3)
-            #k=np.array([1,1,2])/np.sqrt(6):h, n
+            #k=np.array([1,1,2])/np.sqrt(6) :h, n
             #i0=([1,1,0])/np.sqrt(2): tau
             #j0=([1,-1,-2])/np.sqrt(6)
             #k0=([1,-1,1])/np.sqrt(3)
             # b=1/2[0,-1,1] from Gronkowski reference
             z0 = np.abs(self.x00-self.HH*0) / np.tan(self.alpha) # approximate positon of reflection center in z-coordinate 
             z1 = self.Z * np.arange(1, self.M+1) - z0 # z position vector
-   #         z=np.linspace(0,self.Z*self.M,self.M)-self.Z*self.M/2
             phid=self.config['phid']
             slope=self.config['slope']
-
             burvect_x=self.config['burgers_vector_x']*self.convr*1e-10
             burvect_s=self.config['burgers_vector_screw']*self.convr*1e-10
             
             #Gronkowski configuration
-            
-
-            
-            #b=[1,-1,0]
-            #ay1=1
-            #ay2=0
-            #ay3=0
-           
-            #az1= 0
-            #az2= 0.57735027
-            #az3= -0.81649658
-            
             #b=[0,1,1]
             
             #ay1=-0.5
@@ -358,45 +332,11 @@ class XCrystal:
             #az2=-0.28867513
             #az3= 0.40824829
             
-            #b=[0,1,-1]
+         
             
             self.Gronkowski_Chukowski_geometry(ay1=-0.5, ay2=0.40824829, ay3=-0.57735027, az1=-0.70710678, az2=-0.28867513, az3=0.40824829)
-            
-
-#             # 1. Compute deltas
-#             delta_x = self.xx - x0d    # Shape: (xgrid,)
-#             delta_y = self.yy - y0d    # Shape: (ygrid,)
-#             delta_z = z - z0d          # Shape: (M,)
-
-#             # 2. Reshape for broadcasting
-#             delta_x = delta_x[:, np.newaxis, np.newaxis]     # Shape: (xgrid, 1, 1)
-#             delta_y = delta_y[np.newaxis, :, np.newaxis]     # Shape: (1, ygrid, 1)
-#             delta_z = delta_z[np.newaxis, np.newaxis, :]     # Shape: (1, 1, M)
-
-#             # 3. Compute components A, B, C
-#             A = (delta_x * ay1) + (delta_y * ay2) + (delta_z * ay3)  # Shape: (xgrid, ygrid, M)
-#             B = (delta_x * az1) + (delta_y * az2) + (delta_z * az3)  # Shape: (xgrid, ygrid, M)
-#             C = A + 1j * B  # Shape: (xgrid, ygrid, M)
-
-#             # 5. Compute Term1
-#             C1 = a0d / (np.sqrt(2) * 2 * np.pi)
-#             Term1 = C1 * np.angle(C)  # Shape: (xgrid, ygrid, M)
-
-#             # 6. Compute Term2
-#             Numerator = B * A
-#             Denominator = A ** 2 + B ** 2
-#             Fraction = Numerator / Denominator
-#             Term2 = (C1 / 2.0) * Fraction / (2 * (1 - v))  # Shape: (xgrid, ygrid, M)
-
-#             # 7. Compute self.u
-#             self.u = Term1 + Term2  # Shape: (xgrid, ygrid, M)
-
-            # for i in range(self.xgrid):
-            #     for j in range(self.ygrid):
-            #         for k in range(self.M):
-            #             self.u[i,j,k]= 1*(a0d/np.sqrt(2)/2/np.pi*(np.angle(((self.xx[i]-x0d)*az1+(self.yy[j]-y0d)*az2+(z[k]-z0d)*az3)*1j+((self.xx[i]-x0d)*ay1+(self.yy[j]-y0d)*ay2+(z[k]-z0d)*ay3)))+a0d/np.sqrt(2)/2/np.pi/2*(((self.xx[i]-x0d)*az1+(self.yy[j]-y0d)*az2+(z[k]-z0d)*az3)*((self.xx[i]-x0d)*ay1+(self.yy[j]-y0d)*ay2+(z[k]-z0d)*ay3)/(((self.xx[i]-x0d)*ay1+(self.yy[j]-y0d)*ay2+(z[k]-z0d)*ay3)**2+((self.xx[i]-x0d)*az1+(self.yy[j]-y0d)*az2+(z[k]-z0d)*az3)**2)/(2*(1-v))))          
-                        
-                        
+                     
+                                      
                         
         if self.deformation_model == 'ScrewDislocation': 
             
@@ -448,70 +388,9 @@ class XCrystal:
             # 7. Compute self.u
             self.u = C1 * angles
 
-#             for i in range(self.xgrid):
-#                 for j in range(self.ygrid):
-#                     for k in range(self.M):
-#                         self.u[i,j,k]= 1*a0d/np.sqrt(2)/2/np.pi*(np.angle(((self.xx[i]-x0d)*az1+(self.yy[j]-y0d)*az2+(z[k]-z0d)*az3)+1j*((self.xx[i]-x0d)*ay1+(self.yy[j]-y0d)*ay2+(z[k]-z0d)*ay3)))
-#                        # self.u[i,j,k]= 1*a0d/np.sqrt(2)/2/np.pi*(np.arctan(((self.xx[i]-x0d)*az1+(self.yy[j]-y0d)*az2+(z[k]-z0d)*az3)/(1e-20+(self.xx[i]-x0d)*ay1+(self.yy[j]-y0d)*ay2+(z[k]-z0d)*ay3)))
-                                                       
-                                                       
-        if self.deformation_model == 'ThermalBump':
-            
-            name = self.config['uz_filename']
-            self.u = np.load('/pscratch/sd/k/krzywins/CrystalBPM6/crystal-fft-bpm/examples/'+ name) * self.convr
-       
 
-        if self.deformation_model == 'None':
-            print('No deformation model was selected')
-        
-        self.qprint('Congigured deformation model')
-        
-        
-    def run3D(self):
-        
-        start_msg = 'Splitting recipe: ' + self.method
-        self.qprint(start_msg)
-        
-        xbpm = XBPM.XBPM(self)
-        
-        U1i = 0.0 * xbpm.E_in.copy()
-        U2i = 1.0 * xbpm.E_in.copy()
-        
-        U1f, U2f = xbpm.propagate_with_split_operator_BPM(self, U1i, U2i)
-        
-        if self.asymm_angle <= 0.0:
-            Erefl=np.sum(((self.Xx)<(self.xs-self.HH))*np.abs(U1f)**2)
-        else:
-            Erefl=np.sum(np.abs(U1f)**2)
-            
-        
-        E0=np.sum(np.abs(xbpm.E_in)**2)
-        
-        Reflectivity = Erefl / E0 
-        Transmission = np.sum(np.abs(U2f)**2.0) / E0
-        
-        PhaseRefl = np.angle(np.sum(U1f))
-        PhaseTrans = np.angle(np.sum(U2f))
-        
-        self.U1f = U1f
-        self.U2f = U2f
-        #self.U1f = U1f * np.exp(1j * (np.sin(self.alpha) - self.k0) * self.Xx)
-        #self.U2f = U2f * np.exp(-1j *(np.sin(self.alpha) - self.k0) * self.Xx)
-        
-        self.Reflectivity = Reflectivity
-        self.Transmission = Transmission
-        self.PhaseRefl = PhaseRefl 
-        self.PhaseTrans = PhaseTrans
+                                                       
 
-        
-        if self.store_fields:
-            self.U1_field = xbpm.U1_store
-            self.U2_field = xbpm.U2_store
-        
-        
-        print('Photon energy (omega): ', self.omega, '; Reflectivity: ', Reflectivity, '; Transmission: ', Transmission)
-        
-        
     def Gronkowski_Chukowski_geometry(self, ay1, ay2, ay3, az1, az2, az3):
         
 
@@ -553,7 +432,54 @@ class XCrystal:
         Term2 = C1 / 2.0 * Fraction / (2 * (1 - v))  # Shape: (xgrid, ygrid, M)
 
         # 7. Compute self.u
-        self.u = Term1 + Term2  # Shape: (xgrid, ygrid, M)
+        self.u = (Term1 + Term2)*1  # Shape: (xgrid, ygrid, M)    
+        
+    def run3D(self):
+        
+        start_msg = 'Splitting recipe: ' + self.method
+        self.qprint(start_msg)
+        
+        xbpm = XBPM.XBPM(self)
+        
+        U1i = 0.0 * xbpm.E_in.copy()
+        U2i = 1.0 * xbpm.E_in.copy()
+        
+        U1f, U2f = xbpm.propagate_with_split_operator_BPM(self, U1i, U2i)
+        
+        if self.asymm_angle <= 0.0:
+            Erefl=np.sum(((self.Xx)<(self.xs-self.HH))*np.abs(U1f)**2)
+        else:
+            Erefl=np.sum(np.abs(U1f)**2)
+            
+        
+        En0=np.sum(np.abs(xbpm.E_in)**2)
+        
+        Reflectivity = Erefl / En0 
+        Transmission = np.sum(np.abs(U2f)**2.0) / En0
+        
+        PhaseRefl = np.angle(np.sum(U1f))
+        PhaseTrans = np.angle(np.sum(U2f))
+        
+        self.U1f = U1f
+        self.U2f = U2f
+        #self.U1f = U1f * np.exp(1j * (np.sin(self.alpha) - self.k0) * self.Xx)
+        #self.U2f = U2f * np.exp(-1j *(np.sin(self.alpha) - self.k0) * self.Xx)
+        
+        self.Reflectivity = Reflectivity
+        self.Transmission = Transmission
+        self.PhaseRefl = PhaseRefl 
+        self.PhaseTrans = PhaseTrans
+
+        
+        if self.store_fields:
+            self.U1_field = xbpm.U1_store
+            self.U2_field = xbpm.U2_store
+        
+        
+        print('Photon energy (omega): ', self.omega, '; Reflectivity: ', Reflectivity, '; Transmission: ', Transmission)
+        
+        
+
         
         
 #     def test(self):

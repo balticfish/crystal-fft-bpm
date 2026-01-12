@@ -1,100 +1,87 @@
-#=============================================
-# Define Crystal Parameters
-#=============================================
-
-omega0: 17450.0  #central photon energy
-
-a0: 5.4307 #Diamond lattice constant in A
-
-#  Refraction index n = 1 - delta - i*beta :
-
+# --- Physics & Lattice ---
+omega0: 17450.0
+a0: 5.4307
+Miller_h: 4
+Miller_k: 4
+Miller_l: 0
 delta1: 1.5904679835494718E-006
 beta1: 8.1528117003473875E-009
 xrh1: 1.4034932345584149E-006
 xih1: 1.5958203730559318E-008
-
 delta2: 1.5904679835494718E-006
 beta2: 8.1528117003473875E-009
 xrh2: 1.4034932345584149E-006
 xih2: 1.5958203730559318E-008
- 
-Miller_h: 4
-Miller_k: 4
-Miller_l: 0
 
-# crystal thickness in microns
-thickness: 414
-separation1: 0
-separation2: 0
-d_film: 0
-xs: 0   # moving crystal 0 um with respect to origin in x-coordinate
-asymm_angle: 90
-#Grid parameters
+# --- Grid & Geometry ---
 xgrid: 400
 ygrid: 400
-#size in micron
-xxmax: 400 
-yymax: 400
-#yymax: 10 
-
-# x00: 'auto'
-x00: -30
-
-#Grid resolution
 res_x: 33333
 res_y: 10
-#res_y: 10
-M: 500
-#M: 'auto'
-tpad: 4096
+xxmax: 400.0
+yymax: 400.0
+asymm_angle: 90
+thickness: 414.0
+width: 0.0
+d_film: 0
+xs: 0.0
+x00: -30.0
+separation1: 0
+separation2: 0
+CrSize: 800
+geometry: 'not_from_file'
+geometry_file: 'Asymm.geom.npy'
 
-#Integration methods: Euler, Verlet, Forest-Ruth
+# --- Numerical Integration ---
+M: 500
+tpad: 4096
 Zstep_factor: 0.1
 method: 'Verlet'
-#Mode: TIDP, TDP
 mode: 'TIDP'
+zsep: 1
 
+# --- Beam Properties ---
 beam: 'Gaussian'
-waist: 4000 #microns
-slit_x: 5 # microns slit width
-slit_y: 2000 # microns slit width
+waist: 4000.0
+slit_x: 5.0
+slit_y: 2000.0
+time_dependent: 'None'
+tgrid: 0
+tmax: 0.0
+sigma_t: 0.0
 
-
-#pump from file GenesisV2
-
-# beam: 'GenesisV2'
-# fname_GenV2: 'pump-test-GenV2.dfl'
-# ncar_GenV2: 251
-# dgrid_GenV2: 1.2e-3
-# mag_factor_GenV2: 1.0
-# zsep_GenV2: 40
-# crop_t: 1.0
-# crop_x: 1.0
-
-
-#Deformation of lattice: None, Sinusoidal, 
-#deformation: 'None'
+# --- Deformation & Dislocations ---
 deformation: 'Dislocation_60degGronkowskiConfiguration'
 strain: 0
-x0d: 0
-y0d: -0 #y coordinate of dislocatio in um
-z0d: -0 #z coordinate of dislocatio in um
+R: 0.0
+vC100: 0.008
+vC: 0.22
+vSi: 0.22
+def_B: 0.25
+x0d: 50.0
+y0d: -0.0
+z0d: -0.0
 slope: 0.0
-phid: 1.5707963267948966 #orientation of dislocation
-#phid: 0 #orientation of dislocation
-burgers_vector_x: 1.9200423982948915 # a0/2/sqrt(2) in A, x-component mixed 60 deg dislocation 
-burgers_vector_screw: 3.840084796589783 # a0/sqrt(2) in A           
-vSi: 0.22 # Poisson ratio
-dudz: 0.00
+phid: 1.5707963267948966
+burgers_vector_x: 1.9200423982948915
+burgers_vector_screw: 3.840084796589783
+dudz: 0.0
 depth: 0
 B_size: 100
-CrSize: 800
-
 def_amplitude: 0.5e-10
 def_period: 4.0
-def_B: 0.25
-#program settings
-nthread_fft: 4
+
+# --- Pump & Genesis (Settings) ---
+# fname_GenV2: 'None'
+# ncar_GenV2: 0
+# dgrid_GenV2: 0.0
+# mag_factor_GenV2: 1.0
+# zsep_GenV2: 0
+# crop_t: 1.0
+# crop_x: 1.0
+# uz_filename: 'None'
+
+# --- Program Settings ---
+nthread_fft: 64
 quiet_mode: True
 store_fields: True
-zsep: 1

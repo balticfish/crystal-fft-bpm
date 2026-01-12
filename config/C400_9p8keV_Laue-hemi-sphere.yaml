@@ -1,0 +1,79 @@
+# --- Physics & Lattice ---
+omega0: 9831.0
+a0: 3.5668194616854
+Miller_h: 4
+Miller_k: 0
+Miller_l: 0
+
+# --- Susceptibility (Branch 1) ---
+delta1: 7.5628e-06
+beta1: 7.32545e-09
+xrh1: 0.372328E-05
+xih1: 0.141150E-07
+
+# --- Susceptibility (Branch 2) ---
+delta2: 7.5628e-06
+beta2: 7.32545e-09
+xrh2: 0.372328E-05
+xih2: 0.141150E-07
+
+# --- Grid & Geometry ---
+xgrid: 800
+ygrid: 256
+res_x: 0
+res_y: 0
+xxmax: 60
+yymax: 30
+asymm_angle: 90
+thickness: 400
+width: 100
+d_film: 0
+xs: 0
+x00: -45.0
+separation1: 0
+separation2: 0
+CrSize: 800000
+geometry: 'from_file'
+geometry_file: 'Asymm-sphere.geom.npy'
+
+# --- Numerical Integration ---
+M: 300
+tpad: 4096
+Zstep_factor: 0.032
+method: 'Verlet'
+mode: 'TIDP'
+zsep: 1
+
+# --- Beam Properties ---
+beam: 'Gaussian'
+waist: 3500
+slit_x: 120
+slit_y: 100000
+time_dependent: 'None'
+tgrid: 0
+tmax: 0
+sigma_t: 0
+
+# --- Deformation & Dislocations ---
+deformation: 'None'
+strain: 0.00
+uz_filename: 'None'
+x0d: 0
+y0d: 0
+z0d: 0
+slope: 0.0
+phid: 1.5707963267948966
+burgers_vector_x: 1.9200423982948915
+burgers_vector_screw: 3.840084796589783
+v: 0.22
+dudz: 0.00
+depth: 0
+B_size: 100
+def_amplitude: 0.5e-10
+def_period: 4.0
+def_B: 0.25
+
+# --- Program Settings ---
+nthread_fft: 256
+quiet_mode: True
+store_fields: True
