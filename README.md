@@ -7,3 +7,6 @@ asymmetric geometries. The method’s straightforward algorithm, combined with F
 and is easy to implement in Python. It successfully reproduces literature results for bent crystals, dislocations,
 and finite-shaped crystals simulated using the Takagi–Taupin equations. Python implementations for each case
 are provided in this public GitHub repository, with the code structured for parallel computing.
+
+
+https://arxiv.org/abs/2601.06340
