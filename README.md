@@ -9,4 +9,4 @@ and finite-shaped crystals simulated using the Takagi–Taupin equations. Python
 are provided in this public GitHub repository, with the code structured for parallel computing.
 
 
-https://arxiv.org/abs/2601.06340
+Code manual: https://arxiv.org/abs/2601.06340
