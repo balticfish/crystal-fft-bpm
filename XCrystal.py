@@ -2,11 +2,15 @@
 This file is part of fft-bpm. It is subject to the license terms in the LICENSE.txt file found in the top-level directory of this distribution and at https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. No part of fft-bpm, including this file, may be copied, modified, propagated, or distributed except according to the terms contained in the LICENSE.txt file.
 '''
 
+''
+
 import numpy as np
 from scipy.special import jv
 import scipy.constants as sp_const
 import yaml
 import XBPM as XBPM
+import os
+from pathlib import Path
 
 class XCrystal:
 
@@ -23,13 +27,16 @@ class XCrystal:
             self.omega = omega 
             
         self.lam0 = 12398.419300923944 / self.omega0  * 1.0e-10
-        self.convr0 = 2.0 * np.pi / self.lam0 # 'convr0' to convert meters to dimensionless units
-
         self.lam = 12398.419300923944 / self.omega  * 1.0e-10
-        self.K0 = 2.0 * np.pi / self.lam #modululs of k vector
-        self.K00 = 2.0 * np.pi / self.lam0 #modululs of k vector
-        self.convr = self.K0 # 'convr' to convert meters to dimensionless units
-        self.convr0 = self.K00 # 'convr' to convert meters to dimensionless units 
+        
+        # K-vectors (wavenumbers)
+        self.K0 = 2.0 * np.pi / self.lam      # Current wavelength
+        self.K00 = 2.0 * np.pi / self.lam0    # Reference wavelength
+        
+        # Conversion factors (meters to dimensionless units)
+        self.convr = self.K0
+        self.convr0 = self.K00
+        
         self.c = sp_const.c
         self.hbar = sp_const.hbar / sp_const.e 
 
@@ -170,6 +177,25 @@ class XCrystal:
             
             
     def configure(self, Delta_alpha, Rock_angle, field=None):
+        """
+        Configure crystal geometry and deformation model.
+        
+        Parameters
+        ----------
+        Delta_alpha : float
+            Deviation from Bragg angle (radians)
+        Rock_angle : float
+            Crystal rocking angle (radians)
+        field : ndarray, optional
+            Input field array. If None, will be initialized later.
+            
+        Notes
+        -----
+        This method must be called before run3D(). It initializes:
+        - Crystal orientation angles
+        - Z-propagation grid
+        - Deformation field self.u based on selected model
+        """
         
         self.Rock_angle = Rock_angle
         self.Delta_alpha = Delta_alpha
@@ -195,14 +221,11 @@ class XCrystal:
         self.z0 = np.abs(self.x00-self.HH*0) / np.tan(self.alpha) # approximate positon of reflection center in z-coordinate 
         self.z1=np.linspace(0,self.Z*(self.M-1),self.M)-self.z0
         self.z=np.linspace(0,self.Z*(self.M-1),self.M)-self.Z*self.M/2
-        
-        #initialize u array with zeros
-        self.u = np.zeros((self.xgrid,self.ygrid,self.M))
 
             
         if self.deformation_model == 'Sinusoidal':
             
-            zee = np.arange(1, 1e4+1) * 1e-7 - 0.5e-3 # z-mesh [m]
+            zee = np.arange(1, int(1e4)+1) * 1e-7 - 0.5e-3 # z-mesh [m]
             lam_z = self.config['def_period'] * 1.0e-6 
             kz = 2.0 * np.pi / lam_z # undulation period [m]
             amp = self.config['def_amplitude'] # undulation amplidude
@@ -212,14 +235,13 @@ class XCrystal:
             z0 = np.abs(self.x00 - self.HH) / np.tan(self.alpha) # approximate positon of reflection center in z-coordinate 
             z1 = self.Z * np.arange(1, self.M + 1) - z0 # z position vector
             u_z = np.interp(z1, ze, ue) # displacement of crystal planes at z1  
-            self.u = self.u_x[np.newaxis, np.newaxis, :]
+            self.u = u_z[np.newaxis, np.newaxis, :]
 
         
         if self.deformation_model == 'ConstStrainGrad':
        
             self.B1 = self.config['def_B'] / self.convr
             self.u_x = self.B1 * (self.xx + self.HH)**2
-            #self.u = self.B1 * (self.xx[:, np.newaxis, np.newaxis] + self.HH)**2
             self.u=self.u_x[:, np.newaxis, np.newaxis] +0.0*self.z1[np.newaxis, np.newaxis, :]
             
                         
@@ -246,39 +268,45 @@ class XCrystal:
             self.depth = self.config['depth'] * self.convr * 1e-6
             self.B_size = self.config['B_size'] * self.convr * 1e-6
             
-            #CrSize=self.config['CrSize']*1e-6*self.convr
-            # u_x = 1/2/R*((v*self.xx)**2+self.z1**2)
-        
             # Precompute terms
-            X = self.xx - self.x00                  # Shape: (xgrid,)
-            X_term = (X ** 4) / (B_size ** 4)       # Shape: (xgrid,)
+            X = self.xx - self.x00
+            X_term = (X ** 4) / (self.B_size ** 4)
 
-            Y = self.yy                             # Shape: (ygrid,)
-            Y_term = (Y ** 2) / (B_size ** 2)       # Shape: (ygrid,)
+            Y = self.yy
+            Y_term = (Y ** 2) / (self.B_size ** 2)
 
-            Z = self.z                              # Shape: (M,)
-            Z_shifted = Z + self.HH                 # Shape: (M,)
-            Z_term = (Z_shifted ** 2) / (self.depth ** 2)  # Shape: (M,)
+            Z = self.z
+            Z_shifted = Z + self.HH
+            Z_term = (Z_shifted ** 2) / (self.depth ** 2)
 
             # Reshape terms to enable broadcasting
-            X_term = X_term[:, np.newaxis, np.newaxis]  # Shape: (xgrid, 1, 1)
-            Y_term = Y_term[np.newaxis, :, np.newaxis]  # Shape: (1, ygrid, 1)
-            Z_term = Z_term[np.newaxis, np.newaxis, :]  # Shape: (1, 1, M)
+            X_term = X_term[:, np.newaxis, np.newaxis]
+            Y_term = Y_term[np.newaxis, :, np.newaxis]
+            Z_term = Z_term[np.newaxis, np.newaxis, :]
 
             # Sum the terms and compute the exponential
-            Exp_term = np.exp(-(X_term + Y_term + Z_term))              # Shape: (xgrid, ygrid, M)
+            Exp_term = np.exp(-(X_term + Y_term + Z_term))
 
             # Compute the amplitude term
-            Amplitude = self.dudz * Z[np.newaxis, np.newaxis, :]  # Shape: (1, 1, M)
+            Amplitude = self.dudz * Z[np.newaxis, np.newaxis, :]
 
             # Compute self.u
-            self.u = Amplitude * Exp_term  # Shape: (xgrid, ygrid, M)
+            self.u = Amplitude * Exp_term
             
         if self.deformation_model == 'ThermalBump':
             
-            name = self.config['uz_filename']
-            self.u = np.load('/sdf/group/ad/beamphysics/fft-bpm/CrystalBPM_10_07_2025P/examples/'+ name) * self.convr*1
+            filename = self.config['uz_filename']
+            # Get directory where YAML config is located, or use examples folder
+            config_dir = Path(self.config.get('uz_base_path', Path(__file__).parent / 'examples'))
+            full_path = config_dir / filename
             
+            try:
+                self.u = np.load(str(full_path)) * self.convr
+            except FileNotFoundError:
+                raise FileNotFoundError(
+                    f"Thermal bump file not found: {full_path}\n"
+                    f"Set 'uz_base_path' in config or place file in ./examples/"
+                )
        
 
         if self.deformation_model == 'None':
@@ -388,6 +416,9 @@ class XCrystal:
             # 7. Compute self.u
             self.u = C1 * angles
 
+        # Default: if no deformation model set self.u, initialize with zeros
+        if not hasattr(self, 'u') or self.u is None:
+            self.u = np.zeros((self.xgrid, self.ygrid, self.M))
 
                                                        
 
@@ -491,4 +522,3 @@ class XCrystal:
 #         ksak=ksih1_m_select(self)
 #         self.ksak=ksak
 #         print('ksih1_m_select',self.ksak)
-        
